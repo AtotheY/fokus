@@ -204,5 +204,5 @@
     row-gap: 0;
   }
   .release-preview { margin-top: 0; display: flex; flex-direction: column; }
-  .shelf-still { flex: 1; min-height: 0; }
+  .shelf-still { margin-block: auto; }
 }
