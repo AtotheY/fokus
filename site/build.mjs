@@ -20,6 +20,7 @@ for(const file of [...fs.readdirSync(path.join(root,'../public/icons')).map(n=>'
   fs.copyFileSync(path.join(root,'../public',file),path.join(assets,path.basename(file)));
 }
 fs.cpSync(path.join(root, '../public/chess'), path.join(out, 'chess'), {recursive: true});
+fs.cpSync(path.join(root, '../public/daily-games'), path.join(out, 'daily-games'), {recursive: true});
 for(const name of fs.readdirSync(path.join(root,'proof'))) fs.copyFileSync(path.join(root,'proof',name),path.join(assets,name));
 for(const file of ['site.css','showcase.css','showcase.js','demo.js','measure.js']) fs.copyFileSync(path.join(root,'src',file),path.join(assets,file));
 await build({

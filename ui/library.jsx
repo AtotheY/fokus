@@ -9,21 +9,7 @@ import {
 import { ShelfTiles } from "./shelf-tiles";
 import { invoke } from "./settings";
 
-export const catalog = [
-  ["Krillion", "Timed trivia", "https://krillion.io/"],
-  ["Connections", "Word groups", "https://www.nytimes.com/games/connections"],
-  ["Wordle", "Word puzzle", "https://www.nytimes.com/games/wordle/index.html"],
-  ["Minute Cryptic", "Daily clue", "https://www.minutecryptic.com/"],
-  ["Number Waffle", "Number puzzle", "https://wafflegame.net/numberwaffle"],
-  ["Size It Up", "Visual estimation", "https://magnitudle.com/size-it-up"],
-  ["Layers", "Word groups", "https://www.hiddenlayerlabs.com/play/"],
-  ["Poople", "Word ladder", "https://poople.io/"],
-  ["Dartwords", "Word puzzle", "https://www.dartwords.com/"],
-  ["Feetle", "Word ladder", "https://feetle.fun/"],
-  ["Originle", "Geography", "https://originle.io/"],
-  ["Moonshot", "Trivia", "https://moonshotdailygame.com/"],
-  ["Draw the Border", "Geography", "https://drawtheborder.com/"],
-].map(([name, type, url]) => ({ name, type, url }));
+import { catalog } from "./daily-games.mjs";
 
 export function useSaved(key, initial) {
   const [data, set] = useState(() => {

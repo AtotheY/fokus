@@ -1,33 +1,21 @@
 import React from "react";
-import { ArrowDown, ArrowUp, Check, Circle, Clock3, Crosshair, Dices, Flag, Globe2, Grid3X3, Layers, Moon, Pencil, Ruler, Spline, Trash2, Waves, Waypoints } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Circle, Trash2 } from "lucide-react";
+import { catalog } from "./daily-games.mjs";
 import "./shelf-tiles.css";
 
-const covers = {
-  "Timed trivia": [Waves, "#b4dacf", "#215c60"],
-  "Daily clue": [Pencil, "#efc3a5", "#65402c"],
-  "Number puzzle": [Grid3X3, "#f0d58c", "#695024"],
-  "Visual estimation": [Ruler, "#b8d4e7", "#36566b"],
-  "Word ladder": [Waypoints, "#e2bbd4", "#634156"],
-  "Geography": [Globe2, "#acccb5", "#294c47"],
-  "Word puzzle": [Crosshair, "#dfc1a5", "#684730"],
-  "Word groups": [Layers, "#c3b9e0", "#50466b"],
-  "Trivia": [Moon, "#bfc6e8", "#373e68"],
-  "Custom game": [Dices, "#cfc8df", "#524760"],
-};
-const special = {
-  "https://feetle.fun/": Flag,
-  "https://drawtheborder.com/": Spline,
-  "https://krillion.io/": Clock3
-};
-export function GameCover({ game }) {
-  const [Glyph, paper, ink] = covers[game.type] ?? covers["Custom game"];
-  const Detail = special[game.url];
-  const wordle = game.url === "https://www.nytimes.com/games/wordle/index.html";
-  const groups = game.url === "https://www.nytimes.com/games/connections";
-  return <span className={'shelf-cover' + (wordle ? ' cover-wordle' : groups ? ' cover-groups' : '')} style={{'--paper':paper,'--pigment':ink}} aria-hidden="true">
-    {wordle || groups ? <span className="tile-pattern">{Array.from({length:wordle ? 9 : 16}, (_, i)=><i key={i}/>)}</span>
-      : <span className="cover-seal"><Glyph size={31} strokeWidth={1.65}/>{Detail && <Detail className="cover-detail" size={15}/>}</span>}
-  </span>;
+function GameCover({ game }) {
+  const entry = catalog.find(item => item.url === game.url);
+  const initials = game.name.trim().split(/\s+/u).slice(0, 2)
+    .map(word => Array.from(word)[0]).join("").toLocaleUpperCase();
+  return (
+    <span className="shelf-cover" style={{ backgroundColor: entry?.paper }} aria-hidden="true">
+      {entry ? (
+        <img className="game-mark" src={`/daily-games/${entry.artwork}.png`} width="96" height="96" alt="" />
+      ) : (
+        <span className="game-initials">{initials}</span>
+      )}
+    </span>
+  );
 }
 
 export function ShelfTiles({games, done, toggle, open, editing = false, reorder, remove}) {

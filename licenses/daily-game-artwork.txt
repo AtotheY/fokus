@@ -1,0 +1,41 @@
+Daily shelf artwork is supplied by the respective game publishers.
+The following are the original sources for the bundled PNG copies.
+
+Krillion
+https://krillion.io/tiers/krillion.png
+
+Connections
+https://www.nytimes.com/games-assets/v2/assets/connections/NYT-Connections-Icon.svg
+
+Wordle
+https://www.nytimes.com/games-assets/v2/assets/wordle/wordle_logo_192x192.png
+
+Minute Cryptic
+https://www.minutecryptic.com/icon.ico
+
+Number Waffle
+https://assets.waffle.game/number-waffle.8d5c6279.svg
+
+Size It Up
+https://magnitudle.com/icon-magnitude.svg
+
+Layers
+https://www.hiddenlayerlabs.com/play/icons/Icon-192.png
+
+Poople
+https://poople.io/PoopleStroke.png
+
+Dartwords
+https://www.dartwords.com/icon.svg
+
+Feetle
+https://feetle.fun/icon-192.png
+
+Originle
+https://originle.io/ (inline site icon)
+
+Moonshot
+https://moonshotdailygame.com/favicon.svg
+
+Draw the Border
+https://drawtheborder.com/favicon.svg

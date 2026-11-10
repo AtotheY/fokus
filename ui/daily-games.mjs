@@ -1,0 +1,15 @@
+export const catalog = [
+  { name: "Krillion", type: "Timed trivia", url: "https://krillion.io/", artwork: "krillion", paper: "#0b1425" },
+  { name: "Connections", type: "Word groups", url: "https://www.nytimes.com/games/connections", artwork: "connections", paper: "#b3a7fe" },
+  { name: "Wordle", type: "Word puzzle", url: "https://www.nytimes.com/games/wordle/index.html", artwork: "wordle", paper: "#d4e5ce" },
+  { name: "Minute Cryptic", type: "Daily clue", url: "https://www.minutecryptic.com/", artwork: "minute-cryptic", paper: "#ead8f5" },
+  { name: "Number Waffle", type: "Number puzzle", url: "https://wafflegame.net/numberwaffle", artwork: "number-waffle", paper: "#fff1cf" },
+  { name: "Size It Up", type: "Visual estimation", url: "https://magnitudle.com/size-it-up", artwork: "size-it-up", paper: "#dce6ee" },
+  { name: "Layers", type: "Word groups", url: "https://www.hiddenlayerlabs.com/play/", artwork: "layers", paper: "#0a0812" },
+  { name: "Poople", type: "Word ladder", url: "https://poople.io/", artwork: "poople", paper: "#f1dbb7" },
+  { name: "Dartwords", type: "Word puzzle", url: "https://www.dartwords.com/", artwork: "dartwords", paper: "#f7ddbe" },
+  { name: "Feetle", type: "Word ladder", url: "https://feetle.fun/", artwork: "feetle", paper: "#f6e3bd" },
+  { name: "Originle", type: "Geography", url: "https://originle.io/", artwork: "originle", paper: "#f6f6f6" },
+  { name: "Moonshot", type: "Trivia", url: "https://moonshotdailygame.com/", artwork: "moonshot", paper: "#0b0c20" },
+  { name: "Draw the Border", type: "Geography", url: "https://drawtheborder.com/", artwork: "draw-the-border", paper: "#2a2e35" },
+];

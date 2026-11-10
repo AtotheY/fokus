@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ChessPuzzle} from '../../ui/chess.jsx';
 import {newChessBoard, chessPuzzle} from '../../ui/chess-rules.mjs';
 import '../../ui/puzzles.css';
-import {catalog} from '../../ui/library.jsx';
+import {catalog} from '../../ui/daily-games.mjs';
 import {ShelfTiles} from '../../ui/shelf-tiles.jsx';
 
 export function ChessBreak({startingBoard, shortcutScope}) {
