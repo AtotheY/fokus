@@ -22,8 +22,12 @@ scripts, returning Windows error 4551. Code Integrity events 3033 and 3077
 identify the blocked executables and policy
 `{0283AC0F-FFF1-49AE-ADA1-8A933130CAD6}`. No security policy was changed.
 
-Until a native build succeeds, the Windows implementation is unvalidated and
-there is no completed Windows executable or ZIP. Required remaining checks:
+The first GitHub Windows run has now passed native compilation, Rust tests,
+the disposable-hosts helper integration tests and all eight puzzle tests:
+https://github.com/Kismat-Adhikari06/fokus/actions/runs/42756697666
+
+Release packaging and the packaged desktop/service checks remain in progress.
+Required checks before this preview is ready:
 
 1. `cargo check --workspace` and `cargo test --locked --workspace`.
 2. `cargo build --locked --workspace` and `python tests/windows-helper.py`.
