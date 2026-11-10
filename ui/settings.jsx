@@ -17,6 +17,7 @@ const initial = {
   fades: false,
   adaptive: true,
   breakPause: false,
+  countActivity: true,
 };
 const palettes = {
   dark: {
@@ -112,6 +113,29 @@ export function useAppearance(report) {
       return initial;
     }
   });
+  useEffect(() => {
+    if (!prefs.countActivity) return;
+    let attemptedDay, retryAfter = 0;
+    function active() {
+      const today = new Date().toISOString().slice(0, 10);
+      if (attemptedDay === today || Date.now() < retryAfter) return;
+      attemptedDay = today;
+      const retry = () => { attemptedDay = null; retryAfter = Date.now() + 60_000; };
+      invoke("count_active_day").then(ok => { if (ok === false) retry(); }).catch(retry);
+    }
+    function input(e) { if (e.isTrusted && !document.hidden) active(); }
+    function menu(e) { if (["open", "quick", "add", "settings", "reopen"].includes(e.detail)) active(); }
+    window.addEventListener("pointerdown", input);
+    window.addEventListener("keydown", input);
+    window.addEventListener("wheel", input, {passive:true});
+    window.addEventListener("fokus-menu", menu);
+    return () => {
+      window.removeEventListener("pointerdown", input);
+      window.removeEventListener("keydown", input);
+      window.removeEventListener("wheel", input);
+      window.removeEventListener("fokus-menu", menu);
+    };
+  }, [prefs.countActivity]);
   const [system, setSystem] = useState(
     () => matchMedia("(prefers-color-scheme: dark)").matches,
   );
@@ -235,7 +259,7 @@ export function Settings({
         </Button>
       </div>
       <div className="setting-tabs" aria-label="Settings sections">
-        {["App icon", "Colours", "Window", "Blocker"].map((t) => (
+        {["App icon", "Colours", "Window", "Blocker", "Privacy"].map((t) => (
           <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)}>
             {t}
           </button>
@@ -355,6 +379,15 @@ export function Settings({
                 />
               </Row>
             ))}
+          </div>
+        </section>
+      ) : tab === "Privacy" ? (
+        <section>
+          <h2>Usage measurement</h2>
+          <div className="panel">
+            <Row label="Count this Mac on active days" hint="Adds one to the daily total when you use Fokus. No device ID or activity details are sent.">
+              <Switch aria-label="Count this Mac on active days" checked={p.countActivity} onCheckedChange={countActivity => save({ countActivity })} />
+            </Row>
           </div>
         </section>
       ) : (

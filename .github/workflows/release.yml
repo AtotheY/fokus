@@ -62,7 +62,7 @@ jobs:
           test "$version" = "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' desktop/Info.plist)"
           test "$version" = "$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="fokus").version')"
       - run: npm ci
-      - run: npm run build:ui && cargo test --locked --workspace
+      - run: node --test tests/metrics.mjs && npm run build:ui && cargo test --locked --workspace
       - run: npm run build && python3 tests/helper.py
       - run: python3 scripts/check-release.py dist/Fokus-arm64.zip && node tests/puzzles.mjs && python3 tests/comet.py
       - name: Publish verified assets together

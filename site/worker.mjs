@@ -1,5 +1,6 @@
+const result = status=>new Response(null,{status,headers:{'Cache-Control':'no-store'}});
 const pages = new Set(['/','/guides/','/guides/temporarily-unblock-one-website/','/guides/block-websites-during-working-hours/','/guides/what-to-do-while-your-coding-agent-runs/','/download/','/privacy/']);
-const sources = new Set(['google','bing','chatgpt','perplexity','reddit','claude','other','direct/unknown']);
+const sources = new Set(['google','bing','chatgpt','perplexity','reddit','claude','github','youtube','x','duckduckgo','linkedin','other','direct/unknown']);
 const uuid = value => typeof value==='string' && /^[a-f\d]{8}-[a-f\d]{4}-4[a-f\d]{3}-[89ab][a-f\d]{3}-[a-f\d]{12}$/i.test(value);
 export default {
   async fetch(request,env){
@@ -9,6 +10,14 @@ export default {
     }
     if (/^\/releases\/Fokus-[\d.]+-arm64\.zip$/.test(url.pathname)) {
       return Response.redirect('https://github.com/AtotheY/fokus/releases/latest/download/Fokus-arm64.zip', 302);
+    }
+    if (url.pathname === '/api/active') {
+      // The native client claims the UTC day locally. Nothing identifies the sender.
+      if (request.method !== 'POST') return result(405);
+      if (request.headers.has('origin') || request.headers.get('x-fokus-count') !== '1') return result(403);
+      if (request.body !== null && request.headers.get('content-length') !== '0') return result(400);
+      await env.DB.prepare("INSERT INTO app_counts VALUES(date('now'),1) ON CONFLICT(utc_date) DO UPDATE SET active_devices=active_devices+1").run();
+      return result(204);
     }
     if(url.pathname!=='/api/event'){
       const asset=await env.ASSETS.fetch(request);
@@ -24,7 +33,7 @@ export default {
       html.headers.set('Cache-Control','public, max-age=0, must-revalidate, no-transform');
       return html;
     }
-    const result = status=>new Response(null,{status,headers:{'Cache-Control':'no-store'}});
+
     if(request.method!=='POST')return result(405);
     if(request.headers.get('origin')!==url.origin)return result(403);
     if(/Googlebot|Google-InspectionTool|OAI-SearchBot|ChatGPT-User|GPTBot|bingbot|PerplexityBot/i.test(request.headers.get('user-agent')||''))return result(204);
@@ -35,13 +44,11 @@ export default {
     let e;try{e=await request.json();}catch{return result(400);}
     if(!e||typeof e!=='object')return result(400);
     if(e.kind==='activation' && uuid(e.receipt)){
-      const id=(request.headers.get('cookie')||'').match(/(?:^|; )fokus_download=([^;]+)/)?.[1];
-      await env.DB.prepare('INSERT OR IGNORE INTO activations(receipt,visit) VALUES (?,(SELECT visit FROM events WHERE visit=? AND kind=\'download\' LIMIT 1))').bind(e.receipt,uuid(id)?id:'').run();
+      await env.DB.prepare('INSERT OR IGNORE INTO activations(receipt,visit) VALUES (?,NULL)').bind(e.receipt).run();
       return result(204);
     }
-    if(!uuid(e.id)||!['view','demo','cta','download'].includes(e.kind)||!pages.has(e.entry)||!pages.has(e.page)||!sources.has(e.source))return result(400);
-    const guide=pages.has(e.guide)&&e.guide.startsWith('/guides/')&&e.guide!='/guides/'?e.guide:'';
-    await env.DB.prepare('INSERT OR IGNORE INTO events(visit,kind,page,entry,source,guide) VALUES (?,?,?,?,?,?)').bind(e.id,e.kind,e.page,e.entry,e.source,guide).run();
+    if(!['view','demo','cta','download','visit'].includes(e.kind)||!pages.has(e.page)||!sources.has(e.source))return result(400);
+    await env.DB.prepare('INSERT INTO web_counts(page,source,kind) VALUES(?,?,?) ON CONFLICT(day,page,source,kind) DO UPDATE SET total=total+1').bind(e.page,e.source,e.kind).run();
     return result(204);
   }
 };

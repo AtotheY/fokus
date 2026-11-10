@@ -64,6 +64,23 @@ To publish a release, update the package, Cargo, Tauri and Info.plist versions a
 
 To build the marketing site, run `npm ci && npm run build:site`. A Cloudflare deployment configuration template is in `site/wrangler.example.jsonc`. Copy it to `site/wrangler.jsonc` and configure your own database and domains before deploying.
 
+## Private usage reports
+
+In Cloudflare D1 Studio, open the `fokus-site-metrics` database. Select `daily_summary` for daily totals or `website_traffic` for the breakdown by page and referral source. For example:
+
+```sql
+SELECT * FROM daily_summary ORDER BY utc_date DESC LIMIT 30;
+SELECT source, SUM(entries) AS entries, SUM(download_clicks) AS download_clicks
+FROM website_traffic WHERE utc_date >= date('now','-29 days')
+GROUP BY source ORDER BY entries DESC;
+```
+
+An entry starts a tab visit. Page loads, including refreshes, count separately. Earlier site measurements counted a page only once per tab visit. Sources are broad categories; private or missing referrers often appear as direct/unknown. New traffic uses aggregate buckets without visitor IDs or analytics cookies. Optional setup receipts are independent. Web measurement respects GPC, DNT and the switch on the privacy page.
+
+Starting with 0.4.5, the app counts an interacting Mac user profile at most once per UTC day. It sends an empty request and keeps the last counted date on the Mac; the database stores just the date and total. No identifiers link days or connect a Mac to a web visit. Settings → Privacy disables the counter. Test workspaces, debug builds and launches with `FOKUS_DISABLE_ACTIVE_COUNT=1` skip it. Background protection alone, offline devices, older releases and opt-outs are not measured. A blank active count means no report, not proof nobody used Fokus. Counts are estimates; the public write endpoints are not authenticated. Download clicks are not completed installs.
+
+Apply `site/schema.sql` to the bound D1 database before deploying the site. Keep Worker invocation logs and tracing off. Run `node --test tests/metrics.mjs` (Node 22.13+) to exercise the collectors locally; do not submit synthetic counts to production.
+
 ## License
 
 GPL-3.0-or-later. See [LICENSE](LICENSE) and [third-party notices](NOTICE.md).

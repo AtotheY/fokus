@@ -1,6 +1,6 @@
 {
   "name": "fokus-desktop",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "private": true,
   "scripts": {
     "icons": "node scripts/art.cjs",
@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.80",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "wrangler": "4.86.0"
   }
 }

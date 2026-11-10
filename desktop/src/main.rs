@@ -1,3 +1,4 @@
+mod activity;
 mod comet;
 mod mac_apps;
 mod identity_icons;
@@ -442,6 +443,7 @@ fn main() {
             mac_apps::open_game,
             puzzles::new_board,
             focus_request,
+            activity::count_active_day,
             configure_helper,
             appearance,
             theme_files,
