@@ -409,10 +409,8 @@ fn main() {
     tauri::Builder::default()
         .manage(Store(Mutex::new(())))
         .setup(|app| {
-            if let Some(main) = objc2::MainThreadMarker::new() {
-                if let Err(error) = updater::start(main) {
-                    eprintln!("Fokus updater: {error}");
-                }
+            if let Err(error) = updater::start(app.handle()) {
+                eprintln!("Fokus updater: {error}");
             }
             menubar::install(app)?;
             comet::install(app.handle());
@@ -440,11 +438,7 @@ fn main() {
         })
         .on_menu_event(|app, e| match e.id().as_ref() {
             "app-update" => {
-                let _ = app.run_on_main_thread(|| {
-                    if let Some(main) = objc2::MainThreadMarker::new() {
-                        updater::check(main);
-                    }
-                });
+                let _ = updater::app_update_check(app.clone());
             }
             "menu-quit" => app.exit(0),
             "menu-open" => menubar::show(app, "open"),
@@ -460,6 +454,9 @@ fn main() {
             mac_apps::open_game,
             puzzles::new_board,
             focus_request,
+            updater::app_update_status,
+            updater::app_update_check,
+            updater::app_update_install,
             activity::count_active_day,
             configure_helper,
             appearance,

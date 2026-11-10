@@ -23,6 +23,7 @@ import {
   Check,
   X as Close,
 } from "lucide-react";
+import { UpdateIndicator, UpdateOffer, useAppUpdates } from "./app-updates";
 import { Settings, Row, useAppearance, invoke } from "./settings";
 import { ScopePreview, WebsiteCheck, useBreakPause } from "./website";
 import { Groups, SessionGroups } from "./groups";
@@ -243,6 +244,7 @@ function App() {
   };
   const report = (e) => notify(String(e));
   const appearance = useAppearance(report);
+  const appUpdate = useAppUpdates(report);
   const wait = useBreakPause(
     dialog?.type === "break",
     appearance.prefs.breakPause,
@@ -560,12 +562,13 @@ function App() {
       radius="medium"
       className="theme"
     >
+      <UpdateOffer update={appUpdate} />
       <div className="shell">
         <aside>
           <div className="brand">
             <img src={"icons/" + appearance.prefs.icon + ".png"} alt="" />
             <div className="brand-label">
-              <strong className="wordmark">Fokus</strong>
+              <div className="brand-title"><strong className="wordmark">Fokus</strong><UpdateIndicator update={appUpdate} /></div>
               <span className="today">{new Date((now || Date.now() / 1000) * 1000).toLocaleDateString(undefined, {
                 weekday: "long", month: "short", day: "numeric",
               })}</span>
@@ -603,6 +606,7 @@ function App() {
               <div role="status">{error || "Opening"}</div>
             ) : page === "Settings" ? (
               <Settings
+                update={appUpdate}
                 appearance={appearance}
                 ready={ready}
                 installed={state.installed ?? ready}

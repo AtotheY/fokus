@@ -817,3 +817,14 @@ output {
   .sun-disc { left: calc(49% + 38% * var(--sun-progress)); }
   .hero:before { background: linear-gradient(90deg, #1d1c29f5 0%, #211f2cee 24%, #272335b3 44%, transparent 69%); }
 }
+
+.brand-title { display: flex; align-items: center; gap: 5px; }
+aside .update-indicator {
+  width: 28px; height: 28px; flex: none; padding: 0;
+  display: inline-grid; place-items: center; border-radius: 50%;
+  color: var(--accent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent) 60%, color-mix(in srgb, var(--accent) 8%, transparent) 61%);
+}
+aside .update-indicator svg { width: 16px; height: 16px; }
+aside .update-indicator:hover { background: color-mix(in srgb, var(--accent) 24%, transparent); }
+.update-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
