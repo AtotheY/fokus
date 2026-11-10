@@ -3,7 +3,7 @@ import {renderToStaticMarkup} from 'react-dom/server';
 import {ArrowDown, ArrowDownToLine, CalendarClock, Check, ChevronDown, LockKeyhole, UsersRound} from 'lucide-react';
 const ico=(component,size=16)=>renderToStaticMarkup(React.createElement(component,{size,strokeWidth:1.65,'aria-hidden':true}));
 const domains=['reddit.com','x.com','instagram.com'];
-const accessPreview=`<div class="summary"><div class="label">${ico(CalendarClock,14)} Working hours</div><h2 id="count">3 sites blocked</h2><p>Session ends at 5:00 PM</p></div><div class="group"><div class="group-name">${ico(ChevronDown,13)} ${ico(UsersRound,17)} <b>Social media</b><small>3 sites</small></div>${domains.map(s=>`<div class="site"><img width="23" height="23" src="/assets/${s}.png" alt=""><span>${s}</span><button class="lock" data-site="${s}" aria-label="Temporarily unblock ${s}">${ico(LockKeyhole,13)}<span>Unblock</span></button></div>`).join('')}</div><div id="pop" hidden role="group" aria-label="Manage site access"></div><div id="message" class="instruction" role="status">Choose Unblock next to reddit.com.</div>`;
+const accessPreview=`<div class="summary"><div class="label">${ico(CalendarClock,14)} Working hours</div><h2 id="count">3 sites blocked</h2><p>Session ends at 5:00 PM</p></div><div class="group"><div class="group-name">${ico(ChevronDown,13)} ${ico(UsersRound,17)} <b>Social media</b><small>3 sites</small></div>${domains.map(s=>`<div class="site"><img width="23" height="23" src="/assets/${s}.png" alt=""><span>${s}</span><button class="lock" data-site="${s}" aria-label="Temporarily unblock ${s}">${ico(LockKeyhole,13)}<span>Unblock</span></button></div>`).join('')}</div><div id="pop" hidden role="group" aria-label="Manage site access"></div><div id="message" class="instruction" role="status">Try opening reddit.com for five minutes.</div>`;
 const schedulePreview=`<div class="schedule"><b>Working days</b><div class="days">${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((d,i)=>`<button data-day aria-label="${d}" aria-pressed="${i<5}">${d.slice(0,1)}</button>`).join('')}</div><div class="times"><label>Start<input type="time" id="start" value="09:00" required></label><label>End<input type="time" id="end" value="17:00" required></label></div><button id="save-hours">${ico(Check,14)} Save hours</button><p role="status" id="hours-result">Monday–Friday, 9:00 AM–5:00 PM</p></div>`;
 function appWindow(title, body, isDemo = true) {
   return `<div class="studio">
@@ -14,53 +14,27 @@ function appWindow(title, body, isDemo = true) {
 }
 export function home({zip, repository}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
-    <h1>Skip the doomscroll <em>between prompts.</em></h1><p class="pitch">Fokus blocks the feeds you reach for while your coding agent runs, so you can use that time to exercise your mind with a short puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#sample">Try a site break ${ico(ArrowDown,14)}</a></section>
-<div class="features">
-  <section id="sample" class="feature-row">
-    <div class="feature-copy">
-      <h2>Look up a fix without lifting every block.</h2>
-      <p>Give Reddit five minutes to check an error message. X and Instagram stay blocked, and Fokus blocks Reddit again when time runs out.</p>
-    </div>
-    ${appWindow('Overview', '<div class="pane">' + accessPreview + '</div>')}
-  </section>
-  <section class="feature-row feature-reverse" id="blocklists">
-    <div class="feature-copy">
-      <h2>Keep Discord and Steam out of the way.</h2>
-      <p>Choose the Mac apps that pull you out of your editor. If you switch to Discord during a focus session, Fokus hides its window while your voice call keeps running.</p>
-    </div>
-    ${appWindow('Overview', `<figure class="apps-capture">
-      <img width="906" height="288" loading="lazy" src="/assets/mac-apps-active.png" alt="The active Mac apps group in Overview shows Discord and Steam with their Mac icons and a lock beside each app.">
-    </figure>`, false)}
-  </section>
-  <section class="feature-row" id="working-hours">
-    <div class="feature-copy">
-      <h2>Start the block with your workday.</h2>
-      <p>Set a weekday block from nine to five and Fokus repeats it for you. For a late coding session, choose an end time after midnight.</p>
-    </div>
-    ${appWindow('Working hours', '<div class="hours-pane">' + schedulePreview + '</div>')}
-  </section>
-</div>
-<section id="whats-new" class="release-section" aria-labelledby="release-title">
+    <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Work through a word or logic puzzle while your agent codes. Fokus blocks the feeds you’d usually scroll and saves your place when you head back to your editor.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a puzzle ${ico(ArrowDown,14)}</a></section>
+<section id="whats-new" class="release-section" aria-label="Puzzle breaks">
   <div class="release-inner">
-    <h2 id="release-title">What’s new in Fokus</h2>
     <div class="release-grid">
       <article class="release-feature">
-        <h3>Games you can leave mid-move.</h3>
-        <p>Play Word Search or Minesweeper while your agent works. When the diff is ready, switch back to your editor. Your board saves after every move.</p>
+        <h2>A puzzle you can play a few moves at a time.</h2>
+        <p>See if you can find RAIN in the word search. Leave the other words for your next break.</p>
         <div class="release-preview">
           <div class="release-controls" role="group" aria-label="Game preview">
             <button type="button" data-game="words" aria-pressed="true">Word Search</button>
             <button type="button" data-game="mines" aria-pressed="false">Minesweeper</button>
           </div>
           <div class="puzzle-still">
-            <img id="game-words" width="736" height="1160" loading="lazy" src="/assets/built-in-words.png" alt="Word Search in Fokus with two words highlighted on the board and crossed off the list.">
-            <img id="game-mines" width="736" height="1052" hidden loading="lazy" src="/assets/built-in-mines.png" alt="A saved Minesweeper board with revealed squares and one flagged mine.">
+            <div id="game-words" class="game-panel"><img width="736" height="1160" loading="lazy" src="/assets/built-in-words.png" alt="Word Search in Fokus with two words highlighted on the board and crossed off the list."></div>
+            <div id="game-mines" class="game-panel" hidden><img width="736" height="1052" loading="lazy" src="/assets/built-in-mines.png" alt="A saved Minesweeper board with revealed squares and one flagged mine."></div>
           </div>
         </div>
       </article>
       <article class="release-feature">
-        <h3>Your daily puzzle tracker.</h3>
-        <p>Keep Wordle, Connections, and your own daily links on one shelf. Check off a puzzle to see what’s next and keep your daily streak.</p>
+        <h2>Make time for your daily puzzles.</h2>
+        <p>Open your favorite dailies from one shelf. Check off today’s Wordle and Connections is up next. One finished puzzle counts toward your streak.</p>
         <div class="release-preview">
           <div class="release-controls">
             <button id="shelf-toggle" type="button" aria-pressed="false">Mark Wordle done</button>
@@ -75,7 +49,32 @@ export function home({zip, repository}){return `<section class="exhibit-hero"><d
     </div>
   </div>
 </section>
-<div class="source-close"><a href="${repository}">View the source on GitHub ↗</a></div>
+<div class="features">
+  <section id="sample" class="feature-row">
+    <div class="feature-copy">
+      <h2>Open Reddit just long enough to find the fix.</h2>
+      <p>That error message leads to a Reddit thread. Open Reddit for five minutes while X and Instagram stay blocked. Fokus blocks Reddit again when the timer ends.</p>
+    </div>
+    ${appWindow('Overview', '<div class="pane">' + accessPreview + '</div>')}
+  </section>
+  <section class="feature-row feature-reverse" id="blocklists">
+    <div class="feature-copy">
+      <h2>Stay in the call with Discord out of sight.</h2>
+      <p>Add Discord to your blocked Mac apps. If you switch to it during a session, Fokus hides the window. Your voice call carries on in the background.</p>
+    </div>
+    ${appWindow('Overview', `<figure class="apps-capture">
+      <img width="906" height="288" loading="lazy" src="/assets/mac-apps-active.png" alt="The active Mac apps group in Overview shows Discord and Steam with their Mac icons and a lock beside each app.">
+    </figure>`, false)}
+  </section>
+  <section class="feature-row" id="working-hours">
+    <div class="feature-copy">
+      <h2>Block feeds on work time. Get them back at five.</h2>
+      <p>Pick the days and hours you work. A nine-to-five schedule blocks your list on weekday mornings and opens it again each evening. Night shifts can run past midnight.</p>
+    </div>
+    ${appWindow('Working hours', '<div class="hours-pane">' + schedulePreview + '</div>')}
+  </section>
+</div>
+<div class="source-close"><a class="download-main" data-download href="${zip}" download>Download Fokus for Mac ${ico(ArrowDownToLine,17)}</a><a href="${repository}">Fokus is open source on GitHub ↗</a></div>
 <script defer src="/assets/demo.js"></script>
 <script type="module" src="/assets/showcase.js"></script>`;
 }

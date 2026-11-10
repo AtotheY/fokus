@@ -9,7 +9,7 @@ one('#save-hours').onclick=()=>{
   if(!selected.length){msg.textContent='Choose at least one working day.';return;}
   if(!start||!end||end===start){msg.textContent='Choose two different times.';return;}
   const days=selected.length===7?'Every day':selected.map(b=>b.getAttribute('aria-label').slice(0,3)).join(', ');
-  msg.textContent='Saved: '+days+' · '+format(start)+'–'+format(end)+(end<start?' (next day).':'.');
+  msg.textContent='Your hours are set for '+days+' · '+format(start)+'–'+format(end)+(end<start?' (next day).':'.');
 };
 
 const gameButtons = all('[data-game]');
@@ -32,3 +32,18 @@ shelfToggle.addEventListener('click', () => {
   one('#shelf-done').hidden = !done;
   one('#shelf-count').textContent = done ? '1 of 3 complete' : '0 of 3 complete';
 });
+
+
+// Load the app's games as the visitor approaches the puzzle section.
+const puzzleSection = one('#whats-new');
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+    if (entries.some(entry => entry.isIntersecting)) {
+      observer.disconnect();
+      import('./puzzle-preview.js');
+    }
+  }, {rootMargin: '300px'});
+  observer.observe(puzzleSection);
+} else {
+  import('./puzzle-preview.js');
+}

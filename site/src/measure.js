@@ -33,8 +33,8 @@
     const receipt=location.hash.slice(1);
     if(!/^[a-f0-9-]{36}$/i.test(receipt))return;
     const share=()=>post({kind:'activation',receipt}).then(ok=>{
-      if(ok){history.replaceState(null,'',page);note.textContent='Your successful website block has been counted. Thank you.';}
-      else {note.textContent='Your receipt could not be saved. Reload to retry.';}
+      if(ok){history.replaceState(null,'',page);note.textContent='Your website block is working. We’ve counted your setup.';}
+      else {note.textContent='We couldn’t save your setup receipt. Reload this page to try again.';}
     });
     share();return;
   }

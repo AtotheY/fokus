@@ -45,10 +45,10 @@
     if(note || expired.length) message.textContent=note || expired.join(', ')+' blocked again.';
     if(lastCount !== expires.size || !actions.childElementCount) {
       actions.replaceChildren();
-      if(expires.size) action('Skip to next expiry',()=>{
+      if(expires.size) action('Fast-forward to the next block',()=>{
         elapsed = Math.min(...expires.values()); started=Date.now(); close(false);paint();buttons[0].focus();
       });
-      if(expires.size) action('Reset sample',()=>{expires.clear();elapsed=0;started=Date.now();close(false);paint('All three sites are blocked again.');buttons[0].focus()});
+      if(expires.size) action('Reset example',()=>{expires.clear();elapsed=0;started=Date.now();close(false);paint('All three sites are blocked again.');buttons[0].focus()});
     }
     lastCount=expires.size;
   }

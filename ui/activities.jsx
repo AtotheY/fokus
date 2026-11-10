@@ -57,7 +57,7 @@ function useGridKeys(onMove) {
   });
 }
 
-function Mines({ board, save }) {
+export function Mines({ board, save }) {
   const [flagMode, setFlagMode] = useState(false);
   const flagsLeft = MINE_COUNT - board.flags.length;
   const bind = useGridKeys();
@@ -170,7 +170,7 @@ function Ink({ path, color }) {
   );
 }
 
-function WordSearch({ board, save }) {
+export function WordSearch({ board, save }) {
   const [anchor, setAnchor] = useState(null),
     [end, setEnd] = useState(null);
   const [message, setMessage] = useState("");
