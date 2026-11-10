@@ -1,8 +1,8 @@
 # Windows port verification
 
-Verified Windows preview: 2026-11-10, source commit `69821f8`.
+Verified Windows preview: 2026-11-10, source commit `b97c6f9`.
 
-[Passing Windows build and test run](https://github.com/Kismat-Adhikari06/fokus/actions/runs/42759953368)
+[Passing Windows build and test run](https://github.com/Kismat-Adhikari06/fokus/actions/runs/42761379216)
 
 Passed on the isolated Windows runner:
 
@@ -13,7 +13,7 @@ Passed on the isolated Windows runner:
   persistence, automatic break expiry and exact hosts-file restoration.
 - Release ZIP packaging.
 - The shipped release opens a native window and renders React navigation.
-  Ctrl+, opens Settings. The window fits the monitor work area without
+  The Windows shortcut label is verified and Ctrl+, opens Settings. The window fits the monitor work area without
   overlapping the taskbar; the test captured a screenshot.
 - Actual Windows service installation, hosts enforcement, timed breaks,
   reinstall/reconnect preserving authoritative rules, and service removal.
