@@ -1,0 +1,16 @@
+/* Cherry Soda Light */
+:root {
+  color-scheme: light;
+
+  --base: #fff0f5;
+  --text: #47162d;
+  --accent: #9d154e;
+  --on-accent: #ffffff;
+  --gutter: #f9e1eb;
+  --popup: #f8e2ec;
+  --surface: #f8e2ec;
+  --surface-hover: #ead2dd;
+  --surface-active: #dcc1cd;
+  --outline: #dfc5d1;
+  --subtext: #7a4d62;
+}

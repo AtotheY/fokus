@@ -1,0 +1,16 @@
+/* Jade Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #132e29;
+  --text: #e3f4e8;
+  --accent: #78e1aa;
+  --on-accent: #132e29;
+  --gutter: #0b201d;
+  --popup: #1d433a;
+  --surface: #1d433a;
+  --surface-hover: #2d5148;
+  --surface-active: #3d5f56;
+  --outline: #395c52;
+  --subtext: #b0cdbd;
+}

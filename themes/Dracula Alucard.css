@@ -1,0 +1,19 @@
+/* Dracula Alucard
+   Dracula: spec.draculatheme.com.
+
+   Moosik colour scheme. Edit the workspace copy to customise Fokus. What a file leaves out is derived from --base, --text and --accent. */
+
+:root {
+  color-scheme: light;
+
+  --base:             #fffbeb;  /* the cards */
+  --text:             #1f1f1f;  /* body text */
+  --accent:           #644ac9;  /* play buttons, selection, links */
+  --on-accent:        #fffbeb;  /* text and icons on the accent */
+
+  --surface:          #cfcfde;  /* chips, inputs */
+  --outline:          #cfcfde;  /* hairlines */
+  --muted:            #6c664b;  /* third-rank text */
+  --danger:           #cb3a2a;
+  --warning:          #846e15;
+}

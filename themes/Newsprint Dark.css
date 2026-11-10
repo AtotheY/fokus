@@ -1,0 +1,16 @@
+/* Newsprint Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #252525;
+  --text: #f5f3ed;
+  --accent: #e8e6df;
+  --on-accent: #252525;
+  --gutter: #181818;
+  --popup: #343434;
+  --surface: #343434;
+  --surface-hover: #434343;
+  --surface-active: #535352;
+  --outline: #4f4f4e;
+  --subtext: #c4c2bd;
+}

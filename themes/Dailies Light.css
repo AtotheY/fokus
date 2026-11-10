@@ -1,0 +1,16 @@
+/* Dailies Light */
+:root {
+  color-scheme: light;
+
+  --base: #fff3d8;
+  --text: #3e2a17;
+  --accent: #935000;
+  --on-accent: #ffffff;
+  --gutter: #f2e3c4;
+  --popup: #f8e8c9;
+  --surface: #f8e8c9;
+  --surface-hover: #e9d9bb;
+  --surface-active: #dacaad;
+  --outline: #decdb0;
+  --subtext: #735c3d;
+}

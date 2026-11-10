@@ -1,0 +1,43 @@
+name: Publish Mac release
+on:
+  push:
+    tags: ['v*.*.*']
+permissions:
+  contents: write
+concurrency:
+  group: fokus-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check tag, architecture and versions
+        run: |
+          test "$(uname -m)" = arm64
+          version="$(node -p "require('./package.json').version")"
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          test "$GITHUB_REF_NAME" = "v$version"
+          test "$version" = "$(node -p "require('./desktop/tauri.conf.json').version")"
+          test "$version" = "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' desktop/Info.plist)"
+          test "$version" = "$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="fokus").version')"
+      - run: npm ci
+      - run: npm run build:ui && cargo test --locked --workspace
+      - run: npm run build && python3 tests/helper.py
+      - run: python3 scripts/check-release.py dist/Fokus-arm64.zip && node tests/puzzles.mjs && python3 tests/comet.py
+      - name: Publish verified assets together
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: dist
+        run: |
+          shasum -a 256 Fokus-arm64.zip > SHA256SUMS.txt
+          shasum -a 256 -c SHA256SUMS.txt
+          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release create "$GITHUB_REF_NAME" --verify-tag --draft --generate-notes
+          fi
+          test "$(gh release view "$GITHUB_REF_NAME" --json isDraft --jq .isDraft)" = true
+          gh release upload "$GITHUB_REF_NAME" Fokus-arm64.zip SHA256SUMS.txt --clobber
+          gh release edit "$GITHUB_REF_NAME" --draft=false --latest

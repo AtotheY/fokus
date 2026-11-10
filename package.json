@@ -1,0 +1,22 @@
+{
+  "name": "fokus-desktop",
+  "version": "0.4.1",
+  "private": true,
+  "scripts": {
+    "icons": "node scripts/art.cjs",
+    "build:site": "node site/build.mjs",
+    "build:ui": "node scripts/build-ui.mjs",
+    "build": "bash scripts/package.sh",
+    "test": "cargo test --locked --workspace"
+  },
+  "dependencies": {
+    "@radix-ui/themes": "^3.3.0",
+    "lucide-react": "^1.48.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@napi-rs/canvas": "^0.1.80",
+    "esbuild": "^0.25.0"
+  }
+}

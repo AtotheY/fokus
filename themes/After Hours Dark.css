@@ -1,0 +1,16 @@
+/* After Hours Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #21172f;
+  --text: #f7edf8;
+  --accent: #e7fe74;
+  --on-accent: #21172f;
+  --gutter: #150e21;
+  --popup: #342340;
+  --surface: #342340;
+  --surface-hover: #44334f;
+  --surface-active: #53435d;
+  --outline: #4f3f5a;
+  --subtext: #cbb4d4;
+}

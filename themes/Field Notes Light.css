@@ -1,0 +1,16 @@
+/* Field Notes Light */
+:root {
+  color-scheme: light;
+
+  --base: #f2f0da;
+  --text: #333a1f;
+  --accent: #526610;
+  --on-accent: #ffffff;
+  --gutter: #e2e1c7;
+  --popup: #e8e8cd;
+  --surface: #e8e8cd;
+  --surface-hover: #dadabf;
+  --surface-active: #cbccb1;
+  --outline: #cfd0b5;
+  --subtext: #616748;
+}

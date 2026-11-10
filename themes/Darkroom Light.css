@@ -1,0 +1,16 @@
+/* Darkroom Light */
+:root {
+  color-scheme: light;
+
+  --base: #f6eee8;
+  --text: #391e1b;
+  --accent: #ac3327;
+  --on-accent: #ffffff;
+  --gutter: #e8dcd3;
+  --popup: #efdfd8;
+  --surface: #efdfd8;
+  --surface-hover: #e0d0c9;
+  --surface-active: #d2c0ba;
+  --outline: #d6c4be;
+  --subtext: #71534b;
+}

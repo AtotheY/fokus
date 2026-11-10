@@ -1,0 +1,16 @@
+/* Poolside Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #10353b;
+  --text: #e5f8f4;
+  --accent: #ffaa8a;
+  --on-accent: #10353b;
+  --gutter: #09252b;
+  --popup: #19494f;
+  --surface: #19494f;
+  --surface-hover: #29575c;
+  --surface-active: #3a6569;
+  --outline: #366266;
+  --subtext: #aed1d1;
+}

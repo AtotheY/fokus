@@ -1,0 +1,16 @@
+/* Poolside Light */
+:root {
+  color-scheme: light;
+
+  --base: #e2f7f5;
+  --text: #123d41;
+  --accent: #a3432d;
+  --on-accent: #ffffff;
+  --gutter: #cceae7;
+  --popup: #d6efed;
+  --surface: #d6efed;
+  --surface-hover: #c6e1df;
+  --surface-active: #b7d3d1;
+  --outline: #bbd6d5;
+  --subtext: #436c6b;
+}

@@ -1,0 +1,13 @@
+node_modules/
+target/
+dist/
+web/
+.DS_Store
+desktop/gen/
+/site/wrangler.jsonc
+.wrangler/
+.env
+.env.*
+.dev.vars*
+*.p12
+*.mobileprovision

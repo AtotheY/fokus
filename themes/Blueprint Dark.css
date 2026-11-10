@@ -1,0 +1,16 @@
+/* Blueprint Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #142f59;
+  --text: #e8f4ff;
+  --accent: #85ddff;
+  --on-accent: #142f59;
+  --gutter: #0b2142;
+  --popup: #213e69;
+  --surface: #213e69;
+  --surface-hover: #314d75;
+  --surface-active: #415b81;
+  --outline: #3d577e;
+  --subtext: #b5cde8;
+}

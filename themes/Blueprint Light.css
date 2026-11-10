@@ -1,0 +1,16 @@
+/* Blueprint Light */
+:root {
+  color-scheme: light;
+
+  --base: #e9f3ff;
+  --text: #112d56;
+  --accent: #1749a4;
+  --on-accent: #ffffff;
+  --gutter: #d7e8fb;
+  --popup: #dceafa;
+  --surface: #dceafa;
+  --surface-hover: #ccdbed;
+  --surface-active: #bccce0;
+  --outline: #c0d0e3;
+  --subtext: #496386;
+}

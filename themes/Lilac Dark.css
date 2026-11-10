@@ -1,0 +1,16 @@
+/* Lilac Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #292537;
+  --text: #f2edfc;
+  --accent: #c6abff;
+  --on-accent: #292537;
+  --gutter: #1e1b28;
+  --popup: #3e374e;
+  --surface: #3e374e;
+  --surface-hover: #4c465c;
+  --surface-active: #5b546a;
+  --outline: #575066;
+  --subtext: #cac1dc;
+}

@@ -1,0 +1,16 @@
+/* After Hours Light */
+:root {
+  color-scheme: light;
+
+  --base: #f7f1ff;
+  --text: #302041;
+  --accent: #555d00;
+  --on-accent: #ffffff;
+  --gutter: #ece3f3;
+  --popup: #eee4f5;
+  --surface: #eee4f5;
+  --surface-hover: #dfd4e7;
+  --surface-active: #d0c5d8;
+  --outline: #d3c9dc;
+  --subtext: #685576;
+}

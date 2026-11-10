@@ -1,0 +1,16 @@
+/* Newsprint Light */
+:root {
+  color-scheme: light;
+
+  --base: #f6f5ef;
+  --text: #22221f;
+  --accent: #3b3b36;
+  --on-accent: #ffffff;
+  --gutter: #e4e3dd;
+  --popup: #eae9e3;
+  --surface: #eae9e3;
+  --surface-hover: #dad9d3;
+  --surface-active: #cac9c4;
+  --outline: #cecdc8;
+  --subtext: #62625c;
+}

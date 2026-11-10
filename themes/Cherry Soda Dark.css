@@ -1,0 +1,16 @@
+/* Cherry Soda Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #301625;
+  --text: #ffeaf3;
+  --accent: #ff8cbd;
+  --on-accent: #301625;
+  --gutter: #210f19;
+  --popup: #492035;
+  --surface: #492035;
+  --surface-hover: #583044;
+  --surface-active: #664053;
+  --outline: #623c50;
+  --subtext: #deb7c8;
+}

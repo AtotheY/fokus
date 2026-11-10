@@ -1,0 +1,16 @@
+/* Field Notes Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #262b1b;
+  --text: #f1f0d7;
+  --accent: #d4df80;
+  --on-accent: #262b1b;
+  --gutter: #1a1e14;
+  --popup: #363d27;
+  --surface: #363d27;
+  --surface-hover: #454b35;
+  --surface-active: #545a43;
+  --outline: #505640;
+  --subtext: #c5c8ab;
+}

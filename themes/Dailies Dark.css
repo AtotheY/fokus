@@ -1,0 +1,16 @@
+/* Dailies Dark */
+:root {
+  color-scheme: dark;
+
+  --base: #2e251a;
+  --text: #fff2d8;
+  --accent: #ffbd53;
+  --on-accent: #2e251a;
+  --gutter: #211a13;
+  --popup: #413324;
+  --surface: #413324;
+  --surface-hover: #504232;
+  --surface-active: #5f5241;
+  --outline: #5c4e3d;
+  --subtext: #d5c0a2;
+}

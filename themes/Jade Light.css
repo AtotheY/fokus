@@ -1,0 +1,16 @@
+/* Jade Light */
+:root {
+  color-scheme: light;
+
+  --base: #eaf6ec;
+  --text: #14392c;
+  --accent: #126b49;
+  --on-accent: #ffffff;
+  --gutter: #d7e8dc;
+  --popup: #dcefe0;
+  --surface: #dcefe0;
+  --surface-hover: #cce0d2;
+  --surface-active: #bcd2c3;
+  --outline: #c0d6c7;
+  --subtext: #4a6958;
+}

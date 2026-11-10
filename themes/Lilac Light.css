@@ -1,0 +1,16 @@
+/* Lilac Light */
+:root {
+  color-scheme: light;
+
+  --base: #f5effb;
+  --text: #382746;
+  --accent: #78449b;
+  --on-accent: #ffffff;
+  --gutter: #e8def2;
+  --popup: #ede3f6;
+  --surface: #ede3f6;
+  --surface-hover: #dfd4e8;
+  --surface-active: #d0c5da;
+  --outline: #d4c9dd;
+  --subtext: #6d5979;
+}

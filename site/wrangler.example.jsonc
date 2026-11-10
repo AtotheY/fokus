@@ -1,0 +1,10 @@
+{
+  "name": "fokus-site",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-09",
+  "workers_dev": false,
+  "assets": {"directory": "./dist", "binding": "ASSETS", "html_handling": "auto-trailing-slash", "not_found_handling": "404-page", "run_worker_first": true},
+  "d1_databases": [{"binding":"DB","database_name":"fokus-site-metrics","database_id":"REPLACE_WITH_YOUR_D1_ID"}],
+  "routes":[{"pattern":"usefokus.dev","custom_domain":true},{"pattern":"www.usefokus.dev","custom_domain":true}],
+  "observability":{"enabled":true,"head_sampling_rate":0.01,"traces":{"enabled":true,"head_sampling_rate":0.01}}
+}
