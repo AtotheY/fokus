@@ -2,6 +2,10 @@ param([Parameter(Mandatory)][string]$Source, [Parameter(Mandatory)][string]$Rule
 $ErrorActionPreference = 'Stop'
 $base = Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'Fokus'
 try {
+    # A caller running PowerShell 7 can leave its module folders ahead of the
+    # Windows PowerShell modules. Load this host's built-ins explicitly.
+    Import-Module (Join-Path $PSHOME 'Modules\Microsoft.PowerShell.Security\Microsoft.PowerShell.Security.psd1') -Force
+    Import-Module (Join-Path $PSHOME 'Modules\Microsoft.PowerShell.Management\Microsoft.PowerShell.Management.psd1') -Force
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     if (!(New-Object Security.Principal.WindowsPrincipal($identity)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'Administrator approval is required.' }
     if ($OwnerSid -notmatch '^S-1-[0-9-]+$') { throw 'Invalid owner SID.' }

@@ -2,6 +2,7 @@ param([string]$Source, [string]$Rules, [string]$OwnerSid)
 $ErrorActionPreference = 'Stop'
 $base = Join-Path ([Environment]::GetFolderPath('CommonApplicationData')) 'Fokus'
 try {
+    Import-Module (Join-Path $PSHOME 'Modules\Microsoft.PowerShell.Management\Microsoft.PowerShell.Management.psd1') -Force
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
     if (!(New-Object Security.Principal.WindowsPrincipal($identity)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'Administrator approval is required.' }
     if (Test-Path -LiteralPath $base) {
