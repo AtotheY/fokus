@@ -24,9 +24,11 @@ jobs:
       - run: python tests/windows-helper.py
       - run: node --test tests/chess.mjs tests/puzzles.mjs
       - run: npm run build:windows
+        id: package
       - name: Check packaged desktop app
         run: node tests/windows-desktop.mjs
       - name: Check Windows service installation and removal
+        if: ${{ !cancelled() && steps.package.outcome == 'success' }}
         run: python tests/windows-service.py
       - uses: actions/upload-artifact@v4
         with:

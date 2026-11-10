@@ -10,16 +10,28 @@ const folder = await mkdtemp(join(tmpdir(), 'fokus-desktop-'));
 const child = spawn(resolve('dist/Fokus-windows-x64/Fokus.exe'), [], {windowsHide:true, env:{
   ...process.env, FOKUS_TEST_DIRECTORY:folder, FOKUS_DISABLE_ACTIVE_COUNT:'1',
   WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS:'--remote-debugging-port=9222',
+  WEBVIEW2_USER_DATA_FOLDER:join(folder,'webview'),
 }});
+child.stdout.on('data',data=>process.stdout.write(data));
+child.stderr.on('data',data=>process.stderr.write(data));
 const delay = ms => new Promise(r=>setTimeout(r,ms));
 let ws;
 try {
   let target;
+  let diagnostic='No connection attempted';
   for (let n=0; n<90; n++) {
     if (child.exitCode !== null) throw new Error(`Fokus exited with ${child.exitCode}`);
-    try { target = (await (await fetch('http://127.0.0.1:9222/json')).json()).find(t=>t.type==='page'); } catch {}
+    try {
+      const targets=await (await fetch('http://127.0.0.1:9222/json')).json();
+      diagnostic=JSON.stringify(targets);
+      target=targets.find(t=>t.type==='page'||t.type==='webview');
+    } catch(error) { diagnostic=error.message; }
     if (target) break;
     await delay(500);
+  }
+  if(!target) {
+    console.error('WebView2 connection:',diagnostic);
+    try { console.error(execFileSync('powershell.exe',['-NoProfile','-Command',"Get-Process Fokus,msedgewebview2 -ErrorAction SilentlyContinue | Select-Object Name,Id,MainWindowHandle,MainWindowTitle,SessionId | Format-Table -AutoSize"],{encoding:'utf8'})) } catch {}
   }
   assert(target, 'WebView2 debug target did not open');
   ws = new WebSocket(target.webSocketDebuggerUrl);
