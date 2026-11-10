@@ -1,23 +1,15 @@
 import React, { useState } from "react";
 import { Button, Dialog } from "@radix-ui/themes";
 import {
-  ArrowUp,
-  ArrowDown,
-  ArrowUpRight,
   Check,
-  Circle,
-  CircleCheck,
-  Grid2X2,
-  PenLine,
   Plus,
   SlidersHorizontal,
   Sprout,
-  Trash2,
-  Waves,
 } from "lucide-react";
+import { ShelfTiles } from "./shelf-tiles";
 import { invoke } from "./settings";
 
-const catalog = [
+export const catalog = [
   ["Krillion", "Timed trivia", "https://krillion.io/"],
   ["Connections", "Word groups", "https://www.nytimes.com/games/connections"],
   ["Wordle", "Word puzzle", "https://www.nytimes.com/games/wordle/index.html"],
@@ -71,9 +63,7 @@ export function DailyShelf({ now, report, blocked }) {
     today = dateKey(date),
     done = history[today] ?? [];
   const remaining = games.filter((g) => !done.includes(g.url)),
-    next = remaining[0],
     completed = games.length - remaining.length;
-  const FeaturedIcon = next?.name === "Krillion" ? Waves : next?.name === "Minute Cryptic" ? PenLine : Grid2X2;
   let streak = 0;
   for (
     let off = done.length ? 0 : -1;
@@ -126,37 +116,17 @@ export function DailyShelf({ now, report, blocked }) {
     <section className="shelf-page">
       <div className="page-head">
         <h1>Daily shelf</h1>
-        <button className="text-action" onClick={() => setEditing(!editing)}>
-          {editing ? <Check size={14} /> : <SlidersHorizontal size={14} />}{" "}
-          {editing ? "Done editing" : "Edit shelf"}
-        </button>
-      </div>
-      <div className="routine-header">
-        <div>
-          <small>
-            {date.toLocaleDateString(undefined, {
-              month: "long",
-              day: "numeric",
-            })}
-          </small>
-          <h2>
-            {date.toLocaleDateString(undefined, { weekday: "long" })}’s dailies
-          </h2>
-          {games.length > 0 && (
-            <div className="routine-progress">
-              <progress value={completed} max={games.length} />
-              {completed} of {games.length} complete
-            </div>
-          )}
+        <div className="shelf-actions">
+          {games.length > 0 && <button className="text-action" onClick={() => setEditing(!editing)}>
+            {editing ? <Check size={14}/> : <SlidersHorizontal size={14}/>}
+            {editing ? "Done editing" : "Edit shelf"}
+          </button>}
+          <button className="text-action" onClick={()=>setAdding(true)}><Plus size={14}/> Add game</button>
         </div>
-        <div className="history">
-          <div>
-            <b>
-              <Sprout size={14} />{" "}
-              {streak ? streak + " day streak" : "Past 7 days"}
-            </b>
-            {streak > 0 && <small>Past 7 days</small>}
-          </div>
+      </div>
+      <div className="shelf-summary">
+        <span role="status">{games.length ? completed === games.length ? "All done for today" : completed + " of " + games.length + " complete" : "Choose your first daily game"}</span>
+        <details><summary><Sprout size={14}/>{streak ? streak + " day streak" : "Past 7 days"}</summary>
           <div className="stamps">
             {Array.from({ length: 7 }, (_, i) => {
               const day = new Date(date);
@@ -179,90 +149,12 @@ export function DailyShelf({ now, report, blocked }) {
               );
             })}
           </div>
-        </div>
+        </details>
       </div>
-      {next ? (
-        <div className="next-game">
-          <div>
-            <small>Up next</small>
-            <h3>{next.name}</h3>
-            <p>{next.type}</p>
-            <Button size="1" onClick={() => open(next)}>
-              Play {next.name}
-              <ArrowUpRight size={13} />
-            </Button>
-          </div>
-          <FeaturedIcon aria-hidden="true" />
-        </div>
-      ) : (
-        <p className="shelf-empty">
-          {games.length ? "All done for today" : "Choose your first daily game"}
-        </p>
-      )}
-      <div className="section-head">
-        <h2>My routine</h2>
-        <button className="text-action" onClick={() => setAdding(true)}>
-          <Plus size={14} />
-          Add game
-        </button>
-      </div>
-      {games.map((g, i) => {
-        const finished = done.includes(g.url);
-        return (
-          <div className="routine-line" key={g.url}>
-            <button
-              className="small-action"
-              aria-label={
-                (finished ? "Undo completion of " : "Mark done ") + g.name
-              }
-              onClick={() =>
-                save({
-                  ...data,
-                  history: {
-                    ...history,
-                    [today]: finished
-                      ? done.filter((x) => x !== g.url)
-                      : [...done, g.url],
-                  },
-                })
-              }
-            >
-              {finished ? <CircleCheck size={16} /> : <Circle size={16} />}
-            </button>
-            <button onClick={() => open(g)}>
-              {g.name}
-              <ArrowUpRight size={11} />
-            </button>
-            <small>{finished ? "Done today" : g.type}</small>
-            {editing && (
-              <>
-                <button
-                  disabled={!i}
-                  aria-label={"Move " + g.name + " up"}
-                  onClick={() => reorder(i, -1)}
-                >
-                  <ArrowUp size={13} />
-                </button>
-                <button
-                  disabled={i === games.length - 1}
-                  aria-label={"Move " + g.name + " down"}
-                  onClick={() => reorder(i, 1)}
-                >
-                  <ArrowDown size={13} />
-                </button>
-                <button
-                  aria-label={"Remove " + g.name}
-                  onClick={() =>
-                    save({ ...data, games: games.filter((x) => x !== g) })
-                  }
-                >
-                  <Trash2 size={13} />
-                </button>
-              </>
-            )}
-          </div>
-        );
-      })}
+      <ShelfTiles games={games} done={done} open={open} editing={editing} reorder={reorder}
+        remove={game=>save({...data, games:games.filter(g=>g !== game)})}
+        toggle={game=>save({...data, history:{...history, [today]:done.includes(game.url)
+          ? done.filter(url=>url !== game.url) : [...done, game.url]}})} />
       <Dialog.Root open={adding} onOpenChange={setAdding}>
         <Dialog.Content maxWidth="380px">
           <Dialog.Title>Add game</Dialog.Title>

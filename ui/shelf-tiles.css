@@ -1,0 +1,25 @@
+.shelf-tiles {display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,142px),1fr));gap:24px 17px}
+.shelf-tile {position:relative;min-width:0}
+.tile-play {display:grid;width:100%;padding:0;gap:9px;background:none;border:0;text-align:left;font:inherit;color:inherit;text-decoration:none;cursor:pointer}
+.tile-name {font-weight:580;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+.shelf-cover {height:96px;display:grid;place-items:center;position:relative;overflow:hidden;border-radius:9px;background:var(--paper);color:var(--pigment)}
+.cover-seal {display:grid;place-items:center;position:relative;width:50px;height:50px;border:1.5px solid currentColor;border-radius:50%;transform:rotate(-8deg)}
+.cover-detail {position:absolute;right:-4px;bottom:-1px;padding:2px;box-sizing:content-box;background:var(--paper);border-radius:50%}
+.shelf-cover.cover-wordle {background:#c6d8b8}
+.shelf-cover.cover-groups {background:#dfd2ec}
+.tile-pattern {display:grid;grid-template-columns:repeat(3,11px);gap:3px;transform:rotate(-7deg)}
+.tile-pattern i {height:11px;border-radius:2px;background:#f6f3df;box-shadow:0 1px 1px #0002}
+.cover-wordle i:nth-child(3n+1),.cover-wordle i:nth-child(n+7) {background:#447452}
+.cover-wordle i:nth-child(5) {background:#bd963b}
+.cover-groups .tile-pattern {grid-template-columns:repeat(4,10px);gap:3px;transform:rotate(7deg)}
+.cover-groups i {height:10px;background:#f4cd77}
+.cover-groups i:nth-child(n+5){background:#89af88}
+.cover-groups i:nth-child(n+9){background:#729fc7}
+.cover-groups i:nth-child(n+13){background:#9679ad}
+.tile-done,.tile-edit button {display:grid;place-items:center;width:28px;height:28px;border:0;border-radius:50%;cursor:pointer}
+.tile-done {position:absolute;top:6px;right:6px;background:#fff9;color:#514d55}
+.tile-done[aria-pressed=true] {background:#273e32;color:#fff}
+.tile-play:hover .tile-name {text-decoration:underline;text-underline-offset:3px}
+.tile-edit {display:flex;gap:5px;margin-top:6px}
+.tile-edit button {background:var(--surface);color:var(--text)}
+.tile-edit button:disabled {opacity:.35}

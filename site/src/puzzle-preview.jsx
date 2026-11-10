@@ -1,42 +1,46 @@
-import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Mines, WordSearch } from '../../ui/activities.jsx';
+import React, {useState} from 'react';
+import {createRoot} from 'react-dom/client';
+import {ChessPuzzle} from '../../ui/chess.jsx';
+import {newChessBoard, chessPuzzle} from '../../ui/chess-rules.mjs';
+import '../../ui/puzzles.css';
+import {catalog} from '../../ui/library.jsx';
+import {ShelfTiles} from '../../ui/shelf-tiles.jsx';
 
-// The same Rainy afternoon board pictured in the static Mac preview.
-const words = {
-  theme: 'Rainy afternoon',
-  cells: [...'XBLVMSWJTOPAETVJYESKAFCHMZMXPOFTXJKICWQOXYROGUMAODARAINSWYGKVYQT'],
-  words: ['DRIP', 'COCOA', 'TOAST', 'RAIN', 'MUG', 'TEAPOT'],
-  found: { DRIP: [49,42,35,28], COCOA: [22,29,36,43,50] },
-  ended: ''
-};
-const mines = {
-  order: [51, 10, 3, 53, 40, 52, 19, 46, 8, 47, 11, 12, 16, 21, 41, 0, 4, 15, 44, 6, 58, 25, 24, 18, 54, 23, 17, 13, 50, 55, 7, 48, 63, 30, 43, 1, 9, 5, 20, 60, 36, 27, 29, 14, 2, 37, 26, 59, 62, 49, 31, 34, 42, 22, 39, 56, 45, 33, 35, 38, 61, 28, 32, 57],
-  mines: null, flags: [], revealed: [], ended: ''
-};
-
-function PuzzlePreview({ initial, name, Game }) {
-  const key = 'fokus-preview-v1-' + name;
+function ChessBreak() {
+  const key = 'fokus-preview-chess-1';
   const [board, setBoard] = useState(() => {
-    try { return JSON.parse(sessionStorage.getItem(key)) ?? initial; }
-    catch { return initial; }
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(key));
+      if (chessPuzzle(saved)) return saved;
+    } catch {}
+    return newChessBoard(null, 0);
   });
-  const [round, setRound] = useState(0);
   function save(next) {
     setBoard(next);
     try { sessionStorage.setItem(key, JSON.stringify(next)); } catch {}
   }
   return <>
-    <Game key={round} board={board} save={next => { save(next); window.fokusEvent?.('demo'); }} />
-    <div className="preview-end">
-      <span role="status">{board.ended}</span>
-      <button className="preview-reset" onClick={() => { save(initial); setRound(round + 1); }}>Reset example</button>
-    </div>
+    <ChessPuzzle key={board.id} board={board} shortcutScope={document.getElementById('game-chess')} onRange={range=>save(newChessBoard(board, range))} save={next => {save(next); window.fokusEvent?.('demo');}}/>
+    {board.ended && <div className="preview-end"><span role="status">{board.ended}</span>
+      <button className="preview-reset" onClick={()=>save(newChessBoard(board))}>Next puzzle</button>
+    </div>}
   </>;
 }
 
-for (const [name, initial, Game] of [['words', words, WordSearch], ['mines', mines, Mines]]) {
-  const panel = document.getElementById('game-' + name);
-  panel.classList.add('playable');
-  createRoot(panel).render(<PuzzlePreview {...{ name, initial, Game }} />);
+function DailyPreview() {
+  const [done, setDone] = useState([]);
+  const games = [catalog[2], catalog[1], catalog[3], catalog[0]];
+  function toggle(game) {
+    setDone(current=>current.includes(game.url) ? current.filter(url=>url !== game.url) : [...current,game.url]);
+    window.fokusEvent?.('demo');
+  }
+  return <>
+    <div className="daily-preview-head"><strong>Daily shelf</strong><span role="status">{done.length} of {games.length} complete</span></div>
+    <ShelfTiles games={games} done={done} toggle={toggle}/>
+  </>;
 }
+
+const chess = document.getElementById('game-chess');
+chess.classList.add('playable');
+createRoot(chess).render(<ChessBreak/>);
+createRoot(document.getElementById('daily-preview')).render(<DailyPreview/>);

@@ -30,7 +30,7 @@ cp -R public/icons "$res/"
 cp -R themes "$res/"
 cp scripts/{install,uninstall}-helper.sh scripts/migrate-preview.sh "$res/"
 mkdir -p "$res/licenses"
-cp LICENSE NOTICE.md licenses/domain-list-community.txt "$res/licenses/"
+cp LICENSE NOTICE.md licenses/*.txt "$res/licenses/"
 cp desktop/Info.plist "$app/Contents/Info.plist"
 for size in 16 32 128 256 512; do
   sips -z "$size" "$size" desktop/icons/icon.png --out "target/Fokus.iconset/icon_${size}x${size}.png" >/dev/null

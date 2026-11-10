@@ -14,36 +14,22 @@ function appWindow(title, body, isDemo = true) {
 }
 export function home({zip, repository}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
-    <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While your agent codes, use the time you’d usually spend scrolling to work through a puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a puzzle ${ico(ArrowDown,14)}</a></section>
+    <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While your agent codes, use the time you’d usually spend scrolling to work through a chess puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a chess puzzle ${ico(ArrowDown,14)}</a></section>
 <section id="whats-new" class="release-section" aria-label="Puzzle breaks">
   <div class="release-inner">
     <div class="release-grid">
       <article class="release-feature">
-        <h2>A puzzle you can play a few moves at a time.</h2>
-        <p>See if you can find RAIN in the word search. Leave the other words for your next break.</p>
-        <div class="release-preview">
-          <div class="release-controls" role="group" aria-label="Game preview">
-            <button type="button" data-game="words" aria-pressed="true">Word Search</button>
-            <button type="button" data-game="mines" aria-pressed="false">Minesweeper</button>
-          </div>
-          <div class="puzzle-still">
-            <div id="game-words" class="game-panel"><img width="736" height="1160" loading="lazy" src="/assets/built-in-words.png" alt="Word Search in Fokus with two words highlighted on the board and crossed off the list."></div>
-            <div id="game-mines" class="game-panel" hidden><img width="736" height="1052" loading="lazy" src="/assets/built-in-mines.png" alt="A saved Minesweeper board with revealed squares and one flagged mine."></div>
-          </div>
+        <h2>Solve a Lichess chess puzzle.</h2>
+        <p>Find the best move in a position from a real game. Select a piece and its destination. Fokus plays the reply.</p>
+        <div class="release-preview chess-preview">
+          <div id="game-chess" class="game-panel"><img width="920" height="1240" src="/assets/chess-puzzle.png" alt="A chess puzzle in Fokus with the Lichess rating and move history."></div>
         </div>
       </article>
       <article class="release-feature">
         <h2>Make time for your daily puzzles.</h2>
-        <p>Open your favorite dailies from one shelf. Check off today’s Wordle and Connections is up next. One finished puzzle counts toward your streak.</p>
-        <div class="release-preview">
-          <div class="release-controls">
-            <button id="shelf-toggle" type="button" aria-pressed="false">Mark Wordle done</button>
-            <span id="shelf-count" role="status">0 of 3 complete</span>
-          </div>
-          <div class="shelf-still">
-            <img id="shelf-start" width="906" height="942" loading="lazy" src="/assets/daily-shelf-start.png" alt="Daily shelf with Wordle up next and a two-day streak from earlier puzzles.">
-            <img id="shelf-done" width="906" height="942" hidden loading="lazy" src="/assets/daily-shelf-done.png" alt="Daily shelf with Wordle checked off, Connections up next, and a three-day streak.">
-          </div>
+        <p>Open a favorite from your Daily shelf. Check it off when you finish to keep track of what you’ve played today.</p>
+        <div class="release-preview daily-preview" id="daily-preview">
+          <img width="906" height="736" loading="lazy" src="/assets/daily-shelf-start.png" alt="A Daily shelf of illustrated puzzle tiles with individual completion controls.">
         </div>
       </article>
     </div>

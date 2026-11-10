@@ -1,6 +1,6 @@
 {
   "name": "fokus-desktop",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "scripts": {
     "icons": "node scripts/art.cjs",
@@ -10,7 +10,9 @@
     "test": "cargo test --locked --workspace"
   },
   "dependencies": {
+    "@lichess-org/chessground": "10.0.2",
     "@radix-ui/themes": "^3.3.0",
+    "chess.js": "^1.4.0",
     "lucide-react": "^1.48.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

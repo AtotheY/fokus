@@ -397,3 +397,78 @@
     margin-top: 6px;
   }
 }
+
+.sample-chess {
+  background: #6d5645;
+}
+.sample-chess i { background: #eed8b4; }
+.sample-chess .dark-square { background: #b78f69; }
+.sample-chess img, .promotion-choices img {
+  width: 90%;
+  height: 90%;
+  pointer-events: none;
+}
+.puzzle-column:has(.chess-surface) {
+  width: min(100%, clamp(268px, calc(100dvh - 265px), 460px));
+}
+.chess-surface {
+  width: 100%;
+  aspect-ratio: 1;
+  touch-action: none;
+  overflow: hidden;
+  border-radius: 7px;
+  box-shadow: 0 3px 9px #0002;
+}
+.chess-surface cg-board {
+  border-radius: 7px;
+  overflow: hidden;
+  background: conic-gradient(#b78f69 25%, #eed8b4 0 50%, #b78f69 0 75%, #eed8b4 0) 0 0 / 25% 25%;
+}
+.chess-surface coords.files { left: 0; bottom: 2px; height: auto; text-align: right; }
+.chess-surface coords.files coord { padding-right: 3px; }
+.chess-surface coords.ranks { left: 3px; top: 2px; }
+.chess-surface coords.ranks coord { transform: none; }
+.chess-tools label, .chess-underboard, .chess-history, .keyboard-chess {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.chess-tools { white-space: nowrap; }
+.chess-tools select, .keyboard-chess input, .keyboard-chess button {
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+.chess-surface:focus { outline: none; }
+.chess-underboard { justify-content: space-between; margin-top: 8px; font-size: 12px; }
+.chess-history { gap: 0; background: var(--surface); border-radius: 7px; color: var(--subtext); }
+.chess-history span { min-width: 58px; text-align: center; font-variant-numeric: tabular-nums; }
+.chess-history button:disabled { opacity: .35; }
+.keyboard-chess { margin-top: 8px; font-size: 12px; }
+.keyboard-chess:not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip-path: inset(50%);
+  overflow: hidden;
+}
+.promotion-choices {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+}
+.promotion-choices button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: #eed8b4;
+  border: 0;
+  border-radius: 4px;
+}

@@ -12,28 +12,6 @@ one('#save-hours').onclick=()=>{
   msg.textContent='Your hours are set for '+days+' · '+format(start)+'–'+format(end)+(end<start?' (next day).':'.');
 };
 
-const gameButtons = all('[data-game]');
-for (const button of gameButtons) {
-  button.addEventListener('click', () => {
-    for (const option of gameButtons) {
-      const selected = option === button;
-      option.setAttribute('aria-pressed', String(selected));
-      one('#game-' + option.dataset.game).hidden = !selected;
-    }
-  });
-}
-
-const shelfToggle = one('#shelf-toggle');
-shelfToggle.addEventListener('click', () => {
-  const done = shelfToggle.getAttribute('aria-pressed') === 'false';
-  shelfToggle.setAttribute('aria-pressed', String(done));
-  shelfToggle.textContent = done ? 'Undo completion' : 'Mark Wordle done';
-  one('#shelf-start').hidden = done;
-  one('#shelf-done').hidden = !done;
-  one('#shelf-count').textContent = done ? '1 of 3 complete' : '0 of 3 complete';
-});
-
-
 // Load the app's games as the visitor approaches the puzzle section.
 const puzzleSection = one('#whats-new');
 if ('IntersectionObserver' in window) {

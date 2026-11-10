@@ -230,43 +230,11 @@ textarea.entry {
 .app-picker small {
   margin-left: auto;
 }
-.routine-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 24px 0 18px;
-}
-.routine-header h2,
-.next-game h3 {
-  font:
-    400 28px/1.2 Georgia,
-    serif;
-  margin: 3px 0 7px;
-  letter-spacing: -0.8px;
-}
-.routine-progress {
-  font-size: 11px;
-  color: var(--subtext);
-}
-.routine-progress progress {
-  width: 60px;
-  height: 4px;
-  accent-color: var(--accent);
-}
-.history {
-  gap: 15px;
-}
-.history b {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 550;
-}
-.history small {
-  font-size: 10px;
-}
+.shelf-actions,.shelf-summary,.shelf-summary summary {display:flex;align-items:center;gap:12px}
+.shelf-actions {flex-wrap:wrap;justify-content:flex-end}
+.shelf-summary {justify-content:space-between;align-items:baseline;flex-wrap:wrap;margin:14px 0 24px;color:var(--subtext);font-size:12px}
+.shelf-summary summary {gap:5px;cursor:pointer}
+.shelf-summary details[open] .stamps {margin-top:10px}
 .stamps {
   display: flex;
   gap: 5px;
@@ -290,46 +258,6 @@ textarea.entry {
 .today-stamp i {
   outline: 1px solid var(--accent);
   outline-offset: 2px;
-}
-.next-game {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 17px 24px;
-  border: 1px solid var(--outline);
-  border-radius: 8px;
-  background: linear-gradient(
-    115deg,
-    var(--surface),
-    color-mix(in srgb, #6f9c98 18%, var(--surface))
-  );
-}
-.next-game p {
-  margin: 0 0 12px;
-  color: var(--subtext);
-  font-size: 12px;
-}
-.next-game > svg {
-  color: color-mix(in srgb, #90aea8 65%, var(--text));
-  width: 45px;
-  height: 45px;
-  margin-right: 15px;
-}
-.shelf-page .section-head {
-  margin: 22px 0 5px;
-}
-.routine-line {
-  min-height: 34px;
-  border-bottom: 1px solid var(--outline);
-}
-.routine-line button {
-  color: var(--text);
-}
-.routine-line small {
-  margin-left: auto;
-}
-.shelf-empty {
-  padding: 15px 0;
 }
 @media (max-width: 660px) {
   .group-body {

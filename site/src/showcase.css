@@ -206,3 +206,14 @@
   .release-preview { margin-top: 0; display: flex; flex-direction: column; }
   .shelf-still { margin-block: auto; }
 }
+
+.chess-preview,.daily-preview {padding:clamp(16px,2.8vw,36px);justify-content:center}
+.chess-preview {display:grid;place-items:center}
+.chess-preview .game-panel {width:min(100%,368px);height:auto}
+.chess-preview .game-panel>img,.daily-preview>img {display:block;width:100%;height:auto}
+.daily-preview {display:flex;flex-direction:column}
+.daily-preview-head {display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:5px;margin-bottom:22px}
+.daily-preview-head strong {font-size:22px;letter-spacing:-.045em}
+.daily-preview-head span {font-size:12px;color:#c9bfcb}
+.daily-preview .shelf-tiles {grid-template-columns:repeat(2,minmax(0,1fr))}
+.daily-preview .shelf-cover {height:clamp(84px,9vw,122px)}

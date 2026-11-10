@@ -19,6 +19,7 @@ fs.mkdirSync(assets,{recursive:true});
 for(const file of [...fs.readdirSync(path.join(root,'../public/icons')).map(n=>'icons/'+n),'horizon.jpg','sky.webp','ridges.webp','site-icons/reddit.com.png','site-icons/instagram.com.png','site-icons/x.com.png']){
   fs.copyFileSync(path.join(root,'../public',file),path.join(assets,path.basename(file)));
 }
+fs.cpSync(path.join(root, '../public/chess'), path.join(out, 'chess'), {recursive: true});
 for(const name of fs.readdirSync(path.join(root,'proof'))) fs.copyFileSync(path.join(root,'proof',name),path.join(assets,name));
 for(const file of ['site.css','showcase.css','showcase.js','demo.js','measure.js']) fs.copyFileSync(path.join(root,'src',file),path.join(assets,file));
 await build({
@@ -48,7 +49,7 @@ const guideIcons = {
 };
 const siteBreakGuide = guides.find(guide => guide.slug === 'temporarily-unblock-one-website');
 function cards(){return guides.map(g=>`<a class="guide-row" href="${guideUrl(g)}"><span class="glyph">${icon(guideIcons[g.slug] ?? Clock3,22)}</span><span>${g.short}</span>${icon(ArrowUpRight,17)}</a>`).join('')}
-page('/','Puzzle breaks while your coding agent works','Trade doomscrolling between prompts for a word or logic puzzle. Fokus saves your progress, tracks your dailies and blocks distracting sites and apps on your Mac.',showcase({zip:macDownload, repository}),{home:true});
+page('/','Puzzle breaks while your coding agent works','Trade doomscrolling between prompts for a Lichess chess puzzle. Fokus saves your progress, tracks your dailies and blocks distracting sites and apps on your Mac.',showcase({zip:macDownload, repository}),{home:true});
 page('/guides/','Puzzle breaks and website blocking on Mac','Follow tested examples for taking a puzzle break, opening one blocked site or setting your Mac’s working hours.',`<div class="article"><h1>Fokus guides</h1><p class="intro">Take a puzzle break, look up a fix on a blocked site or set your workweek. Each walkthrough includes the result from a Mac test.</p><div class="guide-list">${cards()}</div></div>`);
 for(const g of guides){
   const related = g === siteBreakGuide ? guides[0] : siteBreakGuide;

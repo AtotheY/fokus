@@ -24,10 +24,13 @@ import {
   matchWord,
   arrowCell,
 } from "./puzzle-rules.mjs";
+import { ChessPreview, ChessPuzzle } from "./chess";
+import { newChessBoard, rangeLabel } from "./chess-rules.mjs";
 import "./puzzles.css";
 
 const MINES = "Minesweeper";
 const WORDS = "Word Search";
+const CHESS = "Chess Puzzles";
 const colors = [
   "#99bea1",
   "#d9b583",
@@ -332,7 +335,7 @@ export function WordSearch({ board, save }) {
   );
 }
 
-function HowTo({ mines }) {
+function HowTo({ mines, chess }) {
   return (
     <Popover.Root>
       <Popover.Trigger>
@@ -351,7 +354,9 @@ function HowTo({ mines }) {
         className="puzzle-help"
       >
         <strong>How to play</strong>
-        {mines ? (
+        {chess ? (
+          <p>Find the best move for the side shown. Click a piece and its destination, or drag it. Fokus plays the reply.</p>
+        ) : mines ? (
           <>
             <p>
               Reveal every safe square. Each number counts the mines touching
@@ -370,8 +375,8 @@ function HowTo({ mines }) {
           </p>
         )}
         <p>
-          Use the arrow keys to move and Enter to select.{" "}
-          {mines ? "F toggles a flag." : "Esc clears your selection."}
+          {chess ? "Use ← and → to replay moves. To play by keyboard, Tab to the move field and enter a move in chess notation." : <>Use the arrow keys to move and Enter to select.{" "}
+          {mines ? "F toggles a flag." : "Esc clears your selection."}</>}
         </p>
       </Popover.Content>
     </Popover.Root>
@@ -416,7 +421,8 @@ export function Activities({ report }) {
   const launchers = useRef({}),
     title = useRef(null);
   const board = boards[game],
-    mines = game === MINES;
+    mines = game === MINES,
+    chess = game === CHESS;
   useEffect(() => {
     if (game) title.current?.focus({ preventScroll: true });
   }, [game]);
@@ -426,7 +432,7 @@ export function Activities({ report }) {
       launchers.current[game]?.focus({ preventScroll: true }),
     );
   }
-  async function begin(name, fresh = false) {
+  async function begin(name, fresh = false, range) {
     if (loading) return;
     if (!fresh && boards[name] && !boards[name].ended) {
       setGame(name);
@@ -434,7 +440,9 @@ export function Activities({ report }) {
     }
     setLoading(true);
     try {
-      const next = await invoke("new_board", { game: name });
+      const next = name === CHESS
+        ? newChessBoard(boards[name], range)
+        : await invoke("new_board", { game: name });
       save({ ...boards, [name]: next });
       setRound((r) => r + 1);
       setGame(name);
@@ -450,7 +458,7 @@ export function Activities({ report }) {
       <section className="activities-home">
         <h1>Activities</h1>
         <div className="activity-choices">
-          {[MINES, WORDS].map((name) => (
+          {[CHESS, WORDS, MINES].map((name) => (
             <button
               key={name}
               disabled={loading}
@@ -459,7 +467,7 @@ export function Activities({ report }) {
               }}
               onClick={() => begin(name)}
             >
-              <Preview mines={name === MINES} />
+              {name === CHESS ? <ChessPreview /> : <Preview mines={name === MINES} />}
               <strong>{name}</strong>
               <span>
                 {boards[name] && !boards[name].ended ? "Resume board" : "Play"}{" "}
@@ -470,7 +478,7 @@ export function Activities({ report }) {
         </div>
       </section>
     );
-  const started = mines
+  const started = chess ? board.ply > 1 : mines
     ? board.revealed.length || board.flags.length
     : Object.keys(board.found).length;
   function change(next) {
@@ -492,7 +500,7 @@ export function Activities({ report }) {
             {game}
           </h1>
           <div>
-            <HowTo mines={mines} />
+            <HowTo mines={mines} chess={chess} />
             {!board.ended && (
               <button
                 className="puzzle-icon-button"
@@ -506,7 +514,11 @@ export function Activities({ report }) {
             )}
           </div>
         </header>
-        {mines ? (
+        {chess ? (
+          <ChessPuzzle key={round} board={board} save={change} onRange={range =>
+            started && !board.ended ? setConfirm({ range }) : begin(game, true, range)
+          } />
+        ) : mines ? (
           <Mines key={round} board={board} save={change} />
         ) : (
           <WordSearch key={round} board={board} save={change} />
@@ -519,21 +531,21 @@ export function Activities({ report }) {
               onClick={() => begin(game, true)}
               disabled={loading}
             >
-              Play again <ArrowRight size={13} />
+              {chess ? "Next puzzle" : "Play again"} <ArrowRight size={13} />
             </Button>
           </div>
         )}
-        <Dialog.Root open={confirm} onOpenChange={setConfirm}>
+        <Dialog.Root open={Boolean(confirm)} onOpenChange={setConfirm}>
           <Dialog.Content maxWidth="340px">
             <Dialog.Title>Start a new board?</Dialog.Title>
             <Dialog.Description>
-              This will replace your current puzzle.
+              {confirm?.range != null ? "Start a puzzle rated " + rangeLabel(confirm.range) + " and replace this puzzle?" : "This will replace your current puzzle."}
             </Dialog.Description>
             <div className="dialog-foot">
               <Dialog.Close>
                 <Button variant="soft">Keep playing</Button>
               </Dialog.Close>
-              <Button disabled={loading} onClick={() => begin(game, true)}>
+              <Button disabled={loading} onClick={() => begin(game, true, confirm?.range)}>
                 New board
               </Button>
             </div>
