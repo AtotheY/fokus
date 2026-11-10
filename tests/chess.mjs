@@ -7,6 +7,8 @@ import {
   boardRange,
   newChessBoard,
   playedPositions,
+  moveFrame,
+  solutionPositions,
   ratingRanges,
 } from "../ui/chess-rules.mjs";
 
@@ -67,4 +69,20 @@ test("review reconstructs an alternative mate from a legacy save", () => {
   const solved = acceptChessMove(board, played);
   assert.equal(solved.ended, "Puzzle solved");
   assert.equal(playedPositions(solved).at(-1).fen, game.fen());
+});
+
+test("a legal miss keeps its own playable position and leaves the puzzle available for retry", () => {
+  const puzzle = puzzles.find(p => p.id === "02HAo");
+  const game = new Chess(puzzle.fen);
+  game.move("a1e1");
+  const board = {id: puzzle.id, fen: game.fen(), ply: 1};
+  const attempt = game.move("c7c8");
+  assert.equal(acceptChessMove(board, attempt), null);
+  const frame = moveFrame(attempt);
+  assert.deepEqual(frame.lastMove, ["c7", "c8"]);
+  assert.equal(frame.fen, game.fen());
+  const reply = new Chess(frame.fen).move("a8b8");
+  assert.equal(moveFrame(reply).fen, reply.after);
+  assert.equal(playedPositions(board).at(-1).fen, board.fen);
+  assert.deepEqual(solutionPositions(board)[2].lastMove, ["h4", "f2"]);
 });

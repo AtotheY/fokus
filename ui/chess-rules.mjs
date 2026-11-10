@@ -56,6 +56,24 @@ export function boardRange(board) {
   return band(chessPuzzle(board).rating);
 }
 
+export function moveFrame(move) {
+  const number = move.before.split(" ")[5];
+  return {
+    fen: move.after,
+    lastMove: [move.from, move.to],
+    label: number + (move.color === "w" ? ". " : "… ") + move.san,
+  };
+}
+
+export function solutionPositions(board) {
+  const puzzle = chessPuzzle(board);
+  const game = new Chess(puzzle.fen);
+  return [
+    { fen: game.fen(), label: "Starting position" },
+    ...puzzle.moves.split(" ").map((uci) => moveFrame(game.move(uci))),
+  ];
+}
+
 // Rebuild only the moves the player has reached, including the opponent's setup move.
 export function playedPositions(board) {
   const puzzle = chessPuzzle(board);
@@ -70,13 +88,7 @@ export function playedPositions(board) {
       const promotes = game.get(from)?.type === "p" && /[18]$/.test(to);
       uci = from + to + (promotes ? new Chess(board.fen).get(to).type : "");
     }
-    const number = game.moveNumber();
-    const move = game.move(uci);
-    frames.push({
-      fen: game.fen(),
-      lastMove: [move.from, move.to],
-      label: number + (move.color === "w" ? ". " : "… ") + move.san,
-    });
+    frames.push(moveFrame(game.move(uci)));
   }
   return frames;
 }
