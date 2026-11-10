@@ -43,6 +43,7 @@ try {
         Start-Sleep -Milliseconds 500
     }
     if (!(($names -contains 'Overview') -and ($names -contains 'Groups'))) { throw ('React navigation did not render. Accessibility tree: ' + ($names -join ' | ')) }
+    if (!($names -contains 'Ctrl+,')) { throw ('Windows shortcut label is missing. Accessibility tree: ' + ($names -join ' | ')) }
     $shell = New-Object -ComObject WScript.Shell
     $shell.AppActivate($process.Id) | Out-Null
     $shell.SendKeys('^,')

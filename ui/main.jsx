@@ -589,13 +589,13 @@ function App() {
           <button
             className="settings-link"
             aria-label="Settings"
-            title="Settings (⌘,)"
+            title={`Settings (${settingsShortcut})`}
             aria-current={page === "Settings" ? "page" : undefined}
             onClick={() => navigate("Settings")}
           >
             <Gear />
             <span>Settings</span>
-            <kbd>⌘,</kbd>
+            <kbd>{settingsShortcut}</kbd>
           </button>
         </aside>
         <main key={page}>
