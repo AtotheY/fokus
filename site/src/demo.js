@@ -20,7 +20,7 @@
     pop.hidden = true;
     if (selected) {
       selected.setAttribute('aria-expanded','false');
-      if(returnFocus) selected.focus();
+      if(returnFocus) selected.focus({preventScroll:true});
     }
     selected = null;
   }
@@ -45,10 +45,10 @@
     if(note || expired.length) message.textContent=note || expired.join(', ')+' blocked again.';
     if(lastCount !== expires.size || !actions.childElementCount) {
       actions.replaceChildren();
-      if(expires.size) action('Fast-forward to the next block',()=>{
-        elapsed = Math.min(...expires.values()); started=Date.now(); close(false);paint();buttons[0].focus();
+      if(expires.size) action('Skip timer',()=>{
+        elapsed = Math.min(...expires.values()); started=Date.now(); close(false);paint();buttons[0].focus({preventScroll:true});
       });
-      if(expires.size) action('Reset example',()=>{expires.clear();elapsed=0;started=Date.now();close(false);paint('All three sites are blocked again.');buttons[0].focus()});
+      if(expires.size) action('Reset demo',()=>{expires.clear();elapsed=0;started=Date.now();close(false);paint('All three sites are blocked again.');buttons[0].focus({preventScroll:true})});
     }
     lastCount=expires.size;
   }
@@ -72,7 +72,7 @@
         };
         pop.append(choose);
       }
-      pop.hidden=false;pop.querySelector(until?'[data-min="0"]':'[data-min="5"]').focus();
+      pop.hidden=false;pop.querySelector(until?'[data-min="0"]':'[data-min="5"]').focus({preventScroll:true});
     };
   }
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!pop.hidden)close()});

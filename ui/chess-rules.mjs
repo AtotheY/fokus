@@ -39,6 +39,10 @@ export function newChessBoard(
   }
   const puzzle = available[Math.floor(Math.random() * available.length)];
   seen[low] = [...used, puzzle.id];
+  return startChessBoard(puzzle, seen);
+}
+
+export function startChessBoard(puzzle, seen = { [band(puzzle.rating)]: [puzzle.id] }) {
   const position = new Chess(puzzle.fen);
   const first = position.move(puzzle.moves.split(" ")[0]);
   return {

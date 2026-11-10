@@ -178,22 +178,6 @@
   letter-spacing: -.052em;
   text-wrap: balance;
 }
-.game-panel { width: 100%; height: 100%; min-height: 0; }
-.puzzle-still:has(.playable) { height: auto; min-height: 440px; }
-.game-panel.playable {
-  width: min(100%, 318px);
-  height: auto;
-  --text: #eeeeef;
-  --subtext: #c1bac6;
-  --gutter: #17161b;
-  --surface: #34303a;
-  --outline: #514a58;
-}
-.preview-reset {
-  background: none; color: var(--subtext); border: 0; padding: 6px;
-  font-size: 12px; text-decoration: underline; text-underline-offset: 3px;
-}
-.preview-end { display: flex; justify-content: space-between; align-items: center; min-height: 36px; }
 .source-close { display: grid; justify-items: center; gap: 18px; padding-block: 38px; }
 .source-close .download-main { width: min(100%, 284px); }
 @media (min-width: 721px) {
@@ -207,13 +191,81 @@
   .shelf-still { margin-block: auto; }
 }
 
-.chess-preview,.daily-preview {padding:clamp(16px,2.8vw,36px);justify-content:center}
-.chess-preview {display:grid;place-items:center}
-.chess-preview .game-panel {width:min(100%,368px);height:auto}
-.chess-preview .game-panel>img,.daily-preview>img {display:block;width:100%;height:auto}
-.daily-preview {display:flex;flex-direction:column}
-.daily-preview-head {display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:5px;margin-bottom:22px}
-.daily-preview-head strong {font-size:22px;letter-spacing:-.045em}
-.daily-preview-head span {font-size:12px;color:#c9bfcb}
-.daily-preview .shelf-tiles {grid-template-columns:repeat(2,minmax(0,1fr))}
-.daily-preview .shelf-cover {height:clamp(84px,9vw,122px)}
+/* Reserve the play surface and control rows before the interactive board mounts. */
+.chess-preview {
+  --text: #eeeeef;
+  --subtext: #c1bac6;
+  --gutter: #1b1b23;
+  --surface: #34303a;
+  --outline: #514a58;
+  display: block;
+  padding: clamp(12px, 1.6vw, 24px);
+}
+.game-panel {
+  position: relative;
+  display: grid;
+  width: 100%;
+}
+.opening-position {
+  grid-area: board;
+  display: grid;
+  z-index: 1;
+  grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+  aspect-ratio: 1;
+  border-radius: 7px;
+  overflow: hidden;
+  background: conic-gradient(#b78f69 25%, #eed8b4 0 50%, #b78f69 0 75%, #eed8b4 0) 0 0 / 25% 25%;
+}
+.opening-position span { min-width: 0; min-height: 0; }
+.opening-position img { display: block; width: 100%; height: 100%; }
+.release-preview { align-self: start; width: 100%; }
+.daily-preview {
+  --cover-height: clamp(104px, 12vw, 172px);
+  position: relative;
+  display: block;
+  padding: clamp(14px, 2vw, 28px);
+}
+.daily-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 20px;
+  line-height: 28px;
+}
+.daily-preview-head strong { font-size: 22px; letter-spacing: -.045em; }
+.daily-preview-head span { font-size: 13px; color: #c9bfcb; font-variant-numeric: tabular-nums; }
+.daily-preview .shelf-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.daily-preview .shelf-cover { height: var(--cover-height); }
+.daily-preview .tile-name { font-size: 16px; line-height: 22px; }
+.daily-preview .tile-done { width: 36px; height: 36px; }
+#sample .instruction { min-height: 2.9em; }
+#sample .actions { display: flex; min-height: 36px; }
+#hours-result { min-height: 3em; }
+
+@media (min-width: 901px) {
+  .release-grid { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
+}
+@media (max-width: 900px) {
+  .release-grid { grid-template-columns: minmax(0, 1fr); gap: 42px; max-width: 620px; margin: auto; }
+  .release-feature { display: block; grid-row: auto; }
+}
+@media (max-width: 540px) {
+  .release-inner { padding-inline: 12px; }
+  .release-feature > h2, .release-feature > p { margin-inline: 8px; }
+  .chess-preview { padding: 0 6px; }
+  .game-panel .chess-tools, .game-panel .chess-underboard, .game-panel .chess-result { padding-inline: 4px; }
+  .daily-preview-head strong { font-size: 20px; }
+  #sample .actions { min-height: 44px; }
+  #hours-result { min-height: 4.5em; }
+}
+
+.chess-preview .chess-study-actions button {
+  background: var(--surface);
+  border: 0;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 13px;
+  min-height: 34px;
+  padding: 4px 10px;
+}

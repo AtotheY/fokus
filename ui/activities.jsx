@@ -486,7 +486,7 @@ export function Activities({ report }) {
   }
   return (
     <section className="puzzle-stage">
-      <div className="puzzle-column">
+      <div className={chess ? "puzzle-column chess-column" : "puzzle-column"}>
         <button
           className="puzzle-back"
           disabled={loading}

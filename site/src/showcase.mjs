@@ -12,7 +12,7 @@ function appWindow(title, body, isDemo = true) {
     </div>${body}
   </div>`;
 }
-export function home({zip, repository}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
+export function home({zip, repository, chess, daily, startingId}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
     <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While your agent codes, use the time you’d usually spend scrolling to work through a chess puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a chess puzzle ${ico(ArrowDown,14)}</a></section>
 <section id="whats-new" class="release-section" aria-label="Puzzle breaks">
@@ -22,14 +22,14 @@ export function home({zip, repository}){return `<section class="exhibit-hero"><d
         <h2>Solve a Lichess chess puzzle.</h2>
         <p>Find the best move in a position from a real game. Select a piece and its destination. Fokus plays the reply.</p>
         <div class="release-preview chess-preview">
-          <div id="game-chess" class="game-panel"><img width="920" height="1240" src="/assets/chess-puzzle.png" alt="A chess puzzle in Fokus with the Lichess rating and move history."></div>
+          <div id="game-chess" class="game-panel" data-start="${startingId}">${chess}</div>
         </div>
       </article>
       <article class="release-feature">
         <h2>Make time for your daily puzzles.</h2>
         <p>Open a favorite from your Daily shelf. Check it off when you finish to keep track of what you’ve played today.</p>
         <div class="release-preview daily-preview" id="daily-preview">
-          <img width="906" height="736" loading="lazy" src="/assets/daily-shelf-start.png" alt="A Daily shelf of illustrated puzzle tiles with individual completion controls.">
+          ${daily}
         </div>
       </article>
     </div>

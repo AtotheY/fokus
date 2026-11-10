@@ -408,9 +408,6 @@
   height: 90%;
   pointer-events: none;
 }
-.puzzle-column:has(.chess-surface) {
-  width: min(100%, clamp(268px, calc(100dvh - 265px), 460px));
-}
 .chess-surface {
   width: 100%;
   aspect-ratio: 1;
@@ -475,7 +472,83 @@
 .chess-study-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 6px;
+  grid-area: study;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  min-height: 38px;
+}
+
+.content > .puzzle-stage:has(.chess-surface) {
+  align-content: start;
+}
+.puzzle-column:has(.chess-surface) {
+  width: min(100%, clamp(320px, calc(100dvh - 230px), 620px));
+}
+.chess-tools { min-height: 44px; margin: 0; font-size: 14px; }
+.chess-underboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 48px;
+  margin: 0;
+  font-size: 14px;
+}
+.chess-history { flex: none; }
+.chess-history span { width: 12ch; }
+.chess-history button { width: 36px; min-height: 36px; }
+.chess-column, #game-chess {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 44px auto 48px minmax(38px, auto) minmax(44px, auto);
+  grid-template-areas: "tools" "board" "history" "study" "feedback";
+}
+.chess-column {
+  grid-template-rows: auto auto 44px auto 48px minmax(38px, auto) minmax(44px, auto);
+  grid-template-areas: "back" "heading" "tools" "board" "history" "study" "feedback";
+}
+.chess-column .puzzle-back { grid-area: back; justify-self: start; }
+.chess-column .puzzle-heading { grid-area: heading; }
+.chess-tools { grid-area: tools; }
+.chess-surface { grid-area: board; }
+.chess-underboard { grid-area: history; }
+:is(.chess-column, #game-chess) :is(.play-hint, .puzzle-result, .chess-result) {
+  grid-area: feedback;
+  align-self: center;
+  margin: 0;
+}
+:is(.chess-column, #game-chess) .play-hint { text-align: left; font-size: 14px; }
+:is(.chess-column, #game-chess) .keyboard-chess {
+  grid-area: board;
+  align-self: end;
+  justify-self: center;
+  z-index: 2;
+}
+/* A promotion can happen while reviewing a finished puzzle. Keep its
+   chooser on the board and leave the result and navigation accessible. */
+:is(.chess-column, #game-chess) .promotion-choices,
+:is(.chess-column, #game-chess):has(.chess-result, .puzzle-result) .play-hint {
+  grid-area: board;
+  align-self: start;
+  justify-self: center;
+  z-index: 2;
+  padding: 6px 10px;
+  margin: 6px 0 0;
+  background: var(--surface);
+  border-radius: 6px;
+}
+.keyboard-chess:focus-within {
+  padding: 6px;
+  margin: 0 0 6px;
+  background: var(--surface);
+  border-radius: 6px;
+}
+.chess-result { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }
+.chess-result button {
+  padding: 7px 12px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: 6px;
+  font: inherit;
 }

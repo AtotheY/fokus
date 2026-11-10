@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import {build} from 'esbuild';
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath, pathToFileURL} from 'node:url';
 import {repository, releases, latest, macDownload, checksums} from './src/release.mjs';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
@@ -23,13 +23,33 @@ fs.cpSync(path.join(root, '../public/chess'), path.join(out, 'chess'), {recursiv
 for(const name of fs.readdirSync(path.join(root,'proof'))) fs.copyFileSync(path.join(root,'proof',name),path.join(assets,name));
 for(const file of ['site.css','showcase.css','showcase.js','demo.js','measure.js']) fs.copyFileSync(path.join(root,'src',file),path.join(assets,file));
 await build({
-  entryPoints: [path.join(root, 'src/puzzle-preview.jsx')],
+  entryPoints: [path.join(root, 'src/mount-previews.jsx')],
   bundle: true,
   minify: true,
   jsx: 'automatic',
   format: 'esm',
   outfile: path.join(assets, 'puzzle-preview.js')
 });
+// Render the same controls and shelf geometry that visitors will interact with.
+const serverBundle = path.join(out, '.build/render-previews.mjs');
+await build({
+  entryPoints: [path.join(root, 'src/render-previews.jsx')],
+  outfile: serverBundle,
+  platform: 'node',
+  format: 'esm',
+  bundle: true,
+  packages: 'external',
+  jsx: 'automatic',
+  plugins: [{
+    name: 'static-markup',
+    setup(build) {
+      build.onResolve({filter: /\.css$/}, args => ({path: args.path, namespace: 'style'}));
+      build.onLoad({filter: /.*/, namespace: 'style'}, () => ({contents: '', loader: 'js'}));
+    }
+  }]
+});
+const {previews} = await import(pathToFileURL(serverBundle));
+fs.rmSync(path.dirname(serverBundle), {recursive: true});
 const esc = text => text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 const icon = (name,size=18)=>renderToStaticMarkup(React.createElement(name,{size,'aria-hidden':true,'strokeWidth':1.65}));
 const brand = '<a class="brand" href="/"><img width="40" height="40" src="/assets/ceramic.png" alt="">Fokus</a>';
@@ -49,7 +69,7 @@ const guideIcons = {
 };
 const siteBreakGuide = guides.find(guide => guide.slug === 'temporarily-unblock-one-website');
 function cards(){return guides.map(g=>`<a class="guide-row" href="${guideUrl(g)}"><span class="glyph">${icon(guideIcons[g.slug] ?? Clock3,22)}</span><span>${g.short}</span>${icon(ArrowUpRight,17)}</a>`).join('')}
-page('/','Puzzle breaks while your coding agent works','Trade doomscrolling between prompts for a Lichess chess puzzle. Fokus saves your progress, tracks your dailies and blocks distracting sites and apps on your Mac.',showcase({zip:macDownload, repository}),{home:true});
+page('/','Puzzle breaks while your coding agent works','Trade doomscrolling between prompts for a Lichess chess puzzle. Fokus saves your progress, tracks your dailies and blocks distracting sites and apps on your Mac.',showcase({zip:macDownload, repository, ...previews}),{home:true});
 page('/guides/','Puzzle breaks and website blocking on Mac','Follow tested examples for taking a puzzle break, opening one blocked site or setting your Mac’s working hours.',`<div class="article"><h1>Fokus guides</h1><p class="intro">Take a puzzle break, look up a fix on a blocked site or set your workweek. Each walkthrough includes the result from a Mac test.</p><div class="guide-list">${cards()}</div></div>`);
 for(const g of guides){
   const related = g === siteBreakGuide ? guides[0] : siteBreakGuide;

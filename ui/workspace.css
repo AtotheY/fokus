@@ -234,7 +234,17 @@ textarea.entry {
 .shelf-actions {flex-wrap:wrap;justify-content:flex-end}
 .shelf-summary {justify-content:space-between;align-items:baseline;flex-wrap:wrap;margin:14px 0 24px;color:var(--subtext);font-size:12px}
 .shelf-summary summary {gap:5px;cursor:pointer}
-.shelf-summary details[open] .stamps {margin-top:10px}
+.shelf-summary details { position: relative; }
+.shelf-summary details[open] .stamps {
+  position: absolute;
+  z-index: 2;
+  inset: calc(100% + 6px) 0 auto auto;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px #0003;
+}
 .stamps {
   display: flex;
   gap: 5px;
