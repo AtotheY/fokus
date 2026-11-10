@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+import {Mines} from '../../ui/activities.jsx';
+import {uncover} from '../../ui/puzzle-rules.mjs';
 import {ChessPuzzle} from '../../ui/chess.jsx';
 import {newChessBoard, chessPuzzle} from '../../ui/chess-rules.mjs';
 import '../../ui/puzzles.css';
@@ -35,6 +37,27 @@ export function ChessBreak({startingBoard, shortcutScope}) {
         <button onClick={() => save(newChessBoard(board))}>Next puzzle</button>
       </div>
     )}
+  </>;
+}
+
+function halfwayMinefield() {
+  const start = {mines: [9, 12, 23, 28, 40, 45, 55, 58], flags: [9, 23], revealed: [], ended: ''};
+  return [0, 4, 7, 24].reduce(uncover, start);
+}
+
+export function MinesBreak() {
+  const [board, setBoard] = useState(halfwayMinefield);
+  function save(next) {
+    if (next === board) return;
+    setBoard(next);
+    window.fokusEvent?.('demo');
+  }
+  return <>
+    <Mines board={board} save={save}/>
+    {board.ended && <div className="mine-result">
+      <strong role="status">{board.ended}</strong>
+      <button onClick={() => setBoard(halfwayMinefield())}>Try again</button>
+    </div>}
   </>;
 }
 

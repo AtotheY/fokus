@@ -12,27 +12,35 @@ function appWindow(title, body, isDemo = true) {
     </div>${body}
   </div>`;
 }
-export function home({zip, repository, chess, daily, startingId}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
+export function home({zip, repository, chess, mines, daily, startingId}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
     <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While your agent codes, use the time you’d usually spend scrolling to work through a chess puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a chess puzzle ${ico(ArrowDown,14)}</a></section>
-<section id="whats-new" class="release-section" aria-label="Puzzle breaks">
-  <div class="release-inner">
-    <div class="release-grid">
-      <article class="release-feature">
-        <h2>Solve a Lichess chess puzzle.</h2>
-        <p>Find the best move in a position from a real game. Select a piece and its destination. Fokus plays the reply.</p>
-        <div class="release-preview chess-preview">
-          <div id="game-chess" class="game-panel" data-start="${startingId}">${chess}</div>
-        </div>
+<noscript><style>
+.deck-track::after,.deck-nav{display:none}.deck-track .deck-pin{position:static}.deck-cards{gap:30px}
+.deck-card[data-depth]{grid-area:auto;transform:none}
+</style></noscript>
+<section id="whats-new" class="deck-track" aria-label="Puzzle breaks">
+  <div class="deck-pin">
+    <div class="deck-cards">
+      <article class="deck-card chess-card" data-depth="0" aria-labelledby="chess-title">
+        <div class="deck-copy"><h2 id="chess-title">Find the winning move.</h2><p>Play a Lichess puzzle from a real game. Pick your move and Fokus plays the reply.</p></div>
+        <div id="game-chess" data-start="${startingId}">${chess}</div>
       </article>
-      <article class="release-feature">
-        <h2>Make time for your daily puzzles.</h2>
-        <p>Open a favorite from your Daily shelf. Check it off when you finish to keep track of what you’ve played today.</p>
-        <div class="release-preview daily-preview" id="daily-preview">
-          ${daily}
-        </div>
+      <article class="deck-card mines-card" data-depth="1" aria-labelledby="mines-title">
+        <div class="deck-copy"><h2 id="mines-title">Finish this minefield.</h2><p>Two mines are flagged. Use the numbers to find a safe square and pick up where this game left off.</p></div>
+        <div id="game-mines">${mines}</div>
+      </article>
+      <article class="deck-card shelf-card" data-depth="2" aria-labelledby="shelf-title">
+        <div class="deck-copy"><h2 id="shelf-title">Your daily puzzle shelf.</h2><p>Open a favorite and check it off when you finish. Your shelf keeps track of what you’ve played today.</p></div>
+        <div class="daily-preview" id="daily-preview">${daily}</div>
       </article>
     </div>
+    <nav class="deck-nav" aria-label="Puzzle showcase">
+      <button data-stop="0" aria-current="step" aria-controls="game-chess">Chess</button>
+      <button data-stop="1" aria-controls="game-mines">Minesweeper</button>
+      <button data-stop="2" aria-controls="daily-preview">Daily shelf</button>
+      <button class="deck-next" aria-label="Continue to Minesweeper"><span>Scroll for more</span> ${ico(ArrowDown,16)}</button>
+    </nav>
   </div>
 </section>
 <div class="features">

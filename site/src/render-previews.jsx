@@ -2,7 +2,7 @@ import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {Chess} from 'chess.js';
 import {chessPuzzle, startChessBoard} from '../../ui/chess-rules.mjs';
-import {ChessBreak, DailyPreview} from './puzzle-preview.jsx';
+import {ChessBreak, DailyPreview, MinesBreak} from './puzzle-preview.jsx';
 
 const puzzle = chessPuzzle({id: '02HAo'});
 const startingBoard = startChessBoard(puzzle);
@@ -11,6 +11,7 @@ if (startingBoard.side === 'b') squares.reverse();
 
 export const previews = {
   startingId: puzzle.id,
+  mines: renderToStaticMarkup(<MinesBreak/>),
   daily: renderToStaticMarkup(<DailyPreview/>),
   chess: renderToStaticMarkup(<>
     <ChessBreak startingBoard={startingBoard}/>

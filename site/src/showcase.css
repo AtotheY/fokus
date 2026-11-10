@@ -145,67 +145,6 @@
 
 .apps-capture { margin: 0; padding: clamp(14px,3vw,32px); background: #1c1b22; }
 .apps-capture img { display: block; width: 100%; height: auto; }
-.release-section { background: #201d24; border-block: 1px solid #ffffff19; }
-.release-inner { max-width: var(--max); margin: auto; padding: clamp(40px,6vw,82px) clamp(20px,4vw,52px); }
-.release-inner > h2 { margin: 0 0 32px; font: 400 clamp(36px,4.1vw,62px)/1.05 Georgia,serif; letter-spacing: -.055em; }
-.release-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(22px,4vw,58px); }
-.release-feature { min-width: 0; display: flex; flex-direction: column; }
-.release-feature h3 { margin: 0; font-size: clamp(21px,2.2vw,30px); letter-spacing: -.045em; font-weight: 550; }
-.release-feature > p { max-width: 46ch; color: #cdc6d0; line-height: 1.55; font-size: 16px; margin: 10px 0 22px; }
-.release-preview { margin-top: auto; background: #1b1b23; border: 1px solid #ffffff20; border-radius: 12px; overflow: hidden; }
-.release-controls { min-height: 50px; display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: #2a262f; border-bottom: 1px solid #ffffff13; }
-.release-controls button { background: transparent; color: #d1c8d6; border: 1px solid transparent; border-radius: 6px; padding: 7px 10px; font: inherit; font-size: 13px; cursor: pointer; }
-.release-controls button[aria-pressed=true], #shelf-toggle { background: #48404d; color: #fbf2ff; }
-.release-controls button:hover { border-color: #a295aa; }
-#shelf-count { margin-left: auto; font-size: 12px; color: #dbd3df; }
-.puzzle-still, .shelf-still { height: clamp(370px,34vw,440px); display: grid; place-items: center; padding: 17px; }
-.puzzle-still img, .shelf-still img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: contain; }
-@media (max-width: 720px) {
-  .release-grid { grid-template-columns: 1fr; gap: 36px; }
-  .puzzle-still, .shelf-still { height: auto; }
-  .puzzle-still img { height: 350px; }
-  .shelf-still img { height: auto; }
-}
-@media (max-width: 390px) {
-  .home .nav nav { gap: 11px; }
-  .home .nav nav a { font-size: 12px; }
-}
-
-.release-feature h2 {
-  max-width: 18ch;
-  margin: 0;
-  font: 400 clamp(31px, 3.2vw, 49px)/1.06 Georgia, serif;
-  letter-spacing: -.052em;
-  text-wrap: balance;
-}
-.source-close { display: grid; justify-items: center; gap: 18px; padding-block: 38px; }
-.source-close .download-main { width: min(100%, 284px); }
-@media (min-width: 721px) {
-  .release-feature {
-    display: grid;
-    grid-template-rows: subgrid;
-    grid-row: span 3;
-    row-gap: 0;
-  }
-  .release-preview { margin-top: 0; display: flex; flex-direction: column; }
-  .shelf-still { margin-block: auto; }
-}
-
-/* Reserve the play surface and control rows before the interactive board mounts. */
-.chess-preview {
-  --text: #eeeeef;
-  --subtext: #c1bac6;
-  --gutter: #1b1b23;
-  --surface: #34303a;
-  --outline: #514a58;
-  display: block;
-  padding: clamp(12px, 1.6vw, 24px);
-}
-.game-panel {
-  position: relative;
-  display: grid;
-  width: 100%;
-}
 .opening-position {
   grid-area: board;
   display: grid;
@@ -218,54 +157,162 @@
 }
 .opening-position span { min-width: 0; min-height: 0; }
 .opening-position img { display: block; width: 100%; height: 100%; }
-.release-preview { align-self: start; width: 100%; }
-.daily-preview {
-  --cover-height: clamp(104px, 12vw, 172px);
-  position: relative;
-  display: block;
-  padding: clamp(14px, 2vw, 28px);
-}
-.daily-preview-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 6px;
-  margin-bottom: 20px;
-  line-height: 28px;
-}
-.daily-preview-head strong { font-size: 22px; letter-spacing: -.045em; }
-.daily-preview-head span { font-size: 13px; color: #c9bfcb; font-variant-numeric: tabular-nums; }
-.daily-preview .shelf-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.daily-preview .shelf-cover { height: var(--cover-height); }
-.daily-preview .tile-name { font-size: 16px; line-height: 22px; }
-.daily-preview .tile-done { width: 36px; height: 36px; }
+
+.source-close { display: grid; justify-items: center; gap: 18px; padding-block: 38px; }
+.source-close .download-main { width: min(100%, 284px); }
 #sample .instruction { min-height: 2.9em; }
 #sample .actions { display: flex; min-height: 36px; }
 #hours-result { min-height: 3em; }
 
-@media (min-width: 901px) {
-  .release-grid { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); }
+.deck-track {
+  --text: #f3eee9;
+  --subtext: #d0c5c6;
+  --surface: #393237;
+  --outline: #65565c;
+  --gutter: #231f23;
+  --board-size: min(43vw, 57svh, 530px);
+  position: relative;
+  padding-inline: clamp(14px, 5vw, 64px);
+  background: #201d24;
+  border-block: 1px solid #ffffff18;
+  overflow-anchor: none;
 }
-@media (max-width: 900px) {
-  .release-grid { grid-template-columns: minmax(0, 1fr); gap: 42px; max-width: 620px; margin: auto; }
-  .release-feature { display: block; grid-row: auto; }
+.deck-track::after { content: ''; display: block; height: 134svh; }
+.deck-pin {
+  position: sticky;
+  top: var(--pin-top, 16px);
+  width: min(100%, calc(var(--board-size) * 2 + 60px));
+  margin: auto;
+  padding-block: 42px 18px;
+}
+.deck-cards { display: grid; isolation: isolate; }
+.deck-card {
+  --card-fill: #322a2b;
+  min-width: 0;
+  grid-area: 1 / 1;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--board-size);
+  grid-template-rows: 1fr auto auto auto auto minmax(40px, auto) 1fr;
+  grid-template-areas: ". board" "copy board" "tools board" "history board" "study board" "feedback board" ". board";
+  align-items: center;
+  column-gap: clamp(20px, 4vw, 60px);
+  padding: clamp(18px, 2.1vw, 30px);
+  padding-left: clamp(26px, 3.5vw, 52px);
+  border: 1px solid #ffffff2c;
+  border-radius: 18px;
+  background: var(--card-fill);
+  color: var(--text);
+  transform-origin: center top;
+  transition: transform .42s cubic-bezier(.22,.8,.2,1);
+}
+.mines-card { --card-fill: #25332f; --surface: #374942; --gutter: #192722; }
+.shelf-card { --card-fill: #302b3a; }
+.deck-card[data-depth="0"] { z-index: 3; }
+.deck-card[data-depth="1"] { transform: translateY(-10px) scale(.972); z-index: 2; }
+.deck-card[data-depth="2"] { transform: translateY(-20px) scale(.944); z-index: 1; }
+.deck-card[inert] { pointer-events: none; }
+.deck-card.is-leaving { animation: tuck-away .42s ease-in-out both; }
+@keyframes tuck-away {
+  0% { z-index: 4; transform: none; }
+  42% { z-index: 4; transform: translate(-5%, 2%) rotate(-2deg) scale(.97); }
+  43% { z-index: 0; }
+  100% { z-index: 0; }
+}
+.deck-copy { grid-area: copy; padding-bottom: 16px; }
+.deck-copy h2 {
+  font: 400 clamp(36px, 4.5vw, 66px)/1.01 Georgia, serif;
+  letter-spacing: -.055em;
+  margin: 0;
+  max-width: 11ch;
+  text-wrap: balance;
+}
+.deck-copy p { margin: 14px 0 0; max-width: 34ch; color: #d4cbcc; font-size: clamp(15px,1.22vw,18px); line-height: 1.48; }
+.deck-card #game-chess, .deck-card #game-mines { display: contents; }
+.deck-card .chess-surface, .deck-card .opening-position, .mine-frame, .daily-preview { grid-area: board; align-self: center; width: 100%; }
+.deck-card .chess-tools, .mines-card .puzzle-tools { grid-area: tools; }
+.deck-card .chess-underboard { grid-area: history; }
+.deck-card .chess-study-actions { grid-area: study; }
+.deck-card .chess-tools, .deck-card .chess-underboard, .mines-card .puzzle-tools { width: 100%; max-width: 350px; }
+.deck-card .chess-study-actions button, .mine-result button {
+  background: var(--surface); color: var(--text); border: 0; border-radius: 6px;
+  min-height: 32px; padding: 5px 10px; font-size: 13px;
+}
+.mines-card .puzzle-tools { font-size: 14px; margin-bottom: 0; }
+.mine-result, .mines-card .play-hint { grid-area: history; margin: 0; text-align: left; font-size: 14px; }
+.mine-result { display: flex; align-items: center; gap: 12px; }
+.daily-preview { position: relative; }
+.daily-preview-head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; margin-bottom: 14px; }
+.daily-preview-head strong { font-size: 21px; letter-spacing: -.04em; }
+.daily-preview-head span { font-size: 13px; color: #d1c8d7; font-variant-numeric: tabular-nums; }
+.daily-preview .shelf-tiles { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px 14px; }
+.daily-preview .shelf-cover { height: calc(var(--board-size) * .34); }
+.daily-preview .tile-name { font-size: 15px; }
+.daily-preview .tile-done { width: 34px; height: 34px; }
+.deck-nav { display: flex; align-items: center; justify-content: center; gap: clamp(14px, 3vw, 38px); padding-top: 9px; }
+.deck-nav button {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 42px; padding: 4px 2px;
+  background: none; border: 0; color: #b9afb7; font: inherit; font-size: 14px;
+}
+.deck-nav button::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #756972; }
+.deck-nav button[aria-current] { color: #fff0da; }
+.deck-nav button[aria-current]::before { background: #f0c89f; }
+@media (max-width: 740px) {
+  .deck-track { --board-size: min(100cqi, 48svh, 440px); container-type: inline-size; }
+  .deck-pin { width: min(100%, 468px); padding-block: 31px 8px; }
+  .deck-card {
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: auto 40px auto 42px minmax(35px,auto);
+    grid-template-areas: "copy" "tools" "board" "history" "study";
+    justify-items: stretch; align-content: center;
+    padding: 16px 12px 10px; border-radius: 14px;
+  }
+  .deck-copy { padding-bottom: 4px; }
+  .deck-copy h2 { font-size: clamp(29px, 6.6vw, 37px); max-width: none; }
+  .deck-copy p { max-width: none; margin-top: 6px; font-size: 14px; line-height: 1.4; }
+  .deck-card .chess-surface, .deck-card .opening-position, .deck-card .mine-frame, .daily-preview {
+    max-width: var(--board-size); justify-self: center;
+  }
+  .deck-card .chess-tools, .deck-card .chess-underboard, .mines-card .puzzle-tools {
+    justify-self: center; max-width: var(--board-size); min-height: 38px;
+  }
+  .deck-card .chess-study-actions { justify-content: center; min-height: 32px; }
+  .chess-card #game-chess :is(.play-hint,.chess-result) {
+    grid-area: board; align-self: start; justify-self: center; z-index: 3;
+    margin: 6px; padding: 4px 9px; border-radius: 6px; background: var(--surface); gap: 8px;
+  }
+  .shelf-card { grid-template-rows: auto 1fr; grid-template-areas: "copy" "board"; }
+  .daily-preview-head strong { display: none; }
+  .daily-preview-head { margin-bottom: 9px; }
+  .daily-preview .shelf-cover { height: calc(var(--board-size) * .35); }
+  .daily-preview .shelf-tiles { gap: 16px 10px; }
+  .deck-nav { padding-top: 2px; }
 }
 @media (max-width: 540px) {
-  .release-inner { padding-inline: 12px; }
-  .release-feature > h2, .release-feature > p { margin-inline: 8px; }
-  .chess-preview { padding: 0 6px; }
-  .game-panel .chess-tools, .game-panel .chess-underboard, .game-panel .chess-result { padding-inline: 4px; }
-  .daily-preview-head strong { font-size: 20px; }
   #sample .actions { min-height: 44px; }
   #hours-result { min-height: 4.5em; }
 }
+@media (max-width: 390px) {
+  .home .nav nav { gap: 11px; }
+  .home .nav nav a { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-card { transition: none; }
+  .deck-card.is-leaving { animation: none; }
+}
 
-.chess-preview .chess-study-actions button {
-  background: var(--surface);
-  border: 0;
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 13px;
-  min-height: 34px;
-  padding: 4px 10px;
+.deck-card .chess-surface { touch-action: pan-y pinch-zoom; }
+.deck-nav { justify-content: flex-start; }
+.deck-nav .deck-next { margin-left: auto; color: #c2b7bd; }
+.deck-next::before { display: none; }
+@media (max-width: 540px) {
+  .deck-nav { gap: 14px; }
+  .deck-next span { display: none; }
+  .deck-nav .deck-next { justify-content: center; width: 34px; }
+}
+@media (min-width: 741px) and (max-height: 540px) {
+  .deck-pin { width: min(100%, 790px); padding-block: 24px 4px; }
+  .deck-copy h2 { font-size: 35px; }
+  .deck-copy { padding-bottom: 3px; }
+  .deck-copy p { margin-top: 6px; font-size: 14px; }
 }
