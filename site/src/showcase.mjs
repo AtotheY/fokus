@@ -14,7 +14,7 @@ function appWindow(title, body, isDemo = true) {
 }
 export function home({zip, repository}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
-    <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Work through a word or logic puzzle while your agent codes. Fokus blocks the feeds you’d usually scroll and saves your place when you head back to your editor.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a puzzle ${ico(ArrowDown,14)}</a></section>
+    <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While your agent codes, use the time you’d usually spend scrolling to work through a puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a puzzle ${ico(ArrowDown,14)}</a></section>
 <section id="whats-new" class="release-section" aria-label="Puzzle breaks">
   <div class="release-inner">
     <div class="release-grid">
@@ -52,15 +52,15 @@ export function home({zip, repository}){return `<section class="exhibit-hero"><d
 <div class="features">
   <section id="sample" class="feature-row">
     <div class="feature-copy">
-      <h2>Open Reddit just long enough to find the fix.</h2>
-      <p>That error message leads to a Reddit thread. Open Reddit for five minutes while X and Instagram stay blocked. Fokus blocks Reddit again when the timer ends.</p>
+      <h2>Block distracting websites.</h2>
+      <p>Choose which sites to block during a focus session. Need a Reddit thread? Unblock Reddit for five minutes while the rest stay blocked. Fokus blocks it again when the timer ends.</p>
     </div>
     ${appWindow('Overview', '<div class="pane">' + accessPreview + '</div>')}
   </section>
   <section class="feature-row feature-reverse" id="blocklists">
     <div class="feature-copy">
-      <h2>Stay in the call with Discord out of sight.</h2>
-      <p>Add Discord to your blocked Mac apps. If you switch to it during a session, Fokus hides the window. Your voice call carries on in the background.</p>
+      <h2>Block distracting Mac apps.</h2>
+      <p>Choose the apps that interrupt your work. If you switch to a blocked app, Fokus hides its window. A Discord call or Steam download can keep running in the background.</p>
     </div>
     ${appWindow('Overview', `<figure class="apps-capture">
       <img width="906" height="288" loading="lazy" src="/assets/mac-apps-active.png" alt="The active Mac apps group in Overview shows Discord and Steam with their Mac icons and a lock beside each app.">
@@ -68,8 +68,8 @@ export function home({zip, repository}){return `<section class="exhibit-hero"><d
   </section>
   <section class="feature-row" id="working-hours">
     <div class="feature-copy">
-      <h2>Block feeds on work time. Get them back at five.</h2>
-      <p>Pick the days and hours you work. A nine-to-five schedule blocks your list on weekday mornings and opens it again each evening. Night shifts can run past midnight.</p>
+      <h2>Schedule when blocking starts and stops.</h2>
+      <p>Pick your working days and hours. For a nine-to-five workweek, Fokus blocks your selected sites and apps at 9 AM and restores access at 5 PM. Overnight schedules work too.</p>
     </div>
     ${appWindow('Working hours', '<div class="hours-pane">' + schedulePreview + '</div>')}
   </section>
