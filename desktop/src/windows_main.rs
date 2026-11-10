@@ -333,6 +333,31 @@ fn main() {
     tauri::Builder::default()
         .manage(Store(Mutex::new(())))
         .setup(|app| {
+            if let Some(window) = app.get_webview_window("main") {
+                if let Some(monitor) = window.current_monitor()? {
+                    let area = monitor.work_area();
+                    let outer = window.outer_size()?;
+                    let inner = window.inner_size()?;
+                    let frame_x = outer.width.saturating_sub(inner.width);
+                    let frame_y = outer.height.saturating_sub(inner.height);
+                    let margin = (16.0 * monitor.scale_factor()) as u32;
+                    let max_width = area.size.width.saturating_sub(frame_x + margin * 2).max(1);
+                    let max_height = area.size.height.saturating_sub(frame_y + margin * 2).max(1);
+                    let width = inner.width.min(max_width);
+                    let height = inner.height.min(max_height);
+                    window.set_min_size(Some(tauri::PhysicalSize::new(
+                        ((430.0 * monitor.scale_factor()) as u32).min(max_width),
+                        ((490.0 * monitor.scale_factor()) as u32).min(max_height),
+                    )))?;
+                    window.set_size(tauri::PhysicalSize::new(width, height))?;
+                    window.set_position(tauri::PhysicalPosition::new(
+                        area.position.x
+                            + (area.size.width.saturating_sub(width + frame_x) / 2) as i32,
+                        area.position.y
+                            + (area.size.height.saturating_sub(height + frame_y) / 2) as i32,
+                    ))?;
+                }
+            }
             menubar::install(app)?;
             comet::install(app.handle());
             Ok(())

@@ -24,9 +24,12 @@ if (process.argv.includes('--logs')) {
   console.log(path);
 } else {
   const {artifacts} = await (await get(`/actions/runs/${run}/artifacts`)).json();
-  const artifact = artifacts.find(a=>a.name === 'Fokus-windows-x64' && !a.expired);
+  const screenshot = process.argv.includes('--screenshot');
+  const name = screenshot ? 'Windows-desktop-check' : 'Fokus-windows-x64';
+  const artifact = artifacts.find(a=>a.name === name && !a.expired);
   if (!artifact) throw new Error('No completed Windows artifact is available.');
   const response = await get(`/actions/artifacts/${artifact.id}/zip`);
-  await writeFile('dist/windows-build-artifact.zip', Buffer.from(await response.arrayBuffer()));
-  console.log(`Saved dist/windows-build-artifact.zip (artifact ${artifact.id})`);
+  const path = screenshot ? 'dist/windows-desktop-check-artifact.zip' : 'dist/windows-build-artifact.zip';
+  await writeFile(path, Buffer.from(await response.arrayBuffer()));
+  console.log(`Saved ${path} (artifact ${artifact.id})`);
 }

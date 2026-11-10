@@ -2,7 +2,7 @@
 # builds intentionally disable DevTools, so CDP is not a valid launch probe.
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true') { throw 'Run only on the temporary Windows CI runner.' }
-Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,System.Drawing
+Add-Type -AssemblyName UIAutomationClient,UIAutomationTypes,System.Drawing,System.Windows.Forms
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
@@ -54,6 +54,8 @@ try {
     if (!(($names -contains 'Colours') -and ($names -contains 'Privacy'))) { throw ('Ctrl+, did not open Settings. Accessibility tree: ' + ($names -join ' | ')) }
     $rect = New-Object FokusWindow+Rect
     [FokusWindow]::GetWindowRect($window,[ref]$rect) | Out-Null
+    $area = [Windows.Forms.Screen]::FromHandle($window).WorkingArea
+    if ($rect.Left -lt $area.Left -or $rect.Top -lt $area.Top -or $rect.Right -gt $area.Right -or $rect.Bottom -gt $area.Bottom) { throw 'The startup window overlaps the taskbar or extends beyond the monitor work area.' }
     $bitmap = New-Object Drawing.Bitmap(($rect.Right-$rect.Left),($rect.Bottom-$rect.Top))
     $graphics = [Drawing.Graphics]::FromImage($bitmap)
     try {
