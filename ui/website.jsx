@@ -54,7 +54,7 @@ export function WebsiteCheck({ site, expected, ready }) {
   }, [site, attempt, expected, ready]);
   const blocked = check?.resolution === "blocked";
   const route = check?.resolution === "routable";
-  let title = "Checking this Mac…",
+  let title = "Checking this computer…",
     detail = "";
   if (check?.error) {
     title = "Couldn’t check this address";
@@ -65,15 +65,15 @@ export function WebsiteCheck({ site, expected, ready }) {
       detail =
         "If an existing tab still works, reopen the browser to clear its connection. A remote proxy can use its own DNS.";
     } else if (expected && route) {
-      title = "This Mac still resolves the website";
+      title = "This computer still resolves the website";
       detail =
         "This site is on the block list. Check again in a moment. If this persists, check your DNS or VPN settings.";
     } else if (!expected && blocked) {
-      title = "This Mac still returns a blocking address";
+      title = "This computer still returns a blocking address";
       detail =
         "Check again after a moment. Another blocker, a DNS filter or a cached answer can also produce this result.";
     } else if (!expected && route) {
-      title = "This Mac returns a website address";
+      title = "This computer returns a website address";
       detail =
         "If a tab still shows an error, reopen it. This check tests name resolution only.";
     } else {

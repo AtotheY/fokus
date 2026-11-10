@@ -216,7 +216,7 @@ export function SessionGroups({
                     <div className="group-item" key={item.key}>
                       <IdentityIcon site={item.key} appId={item.app ? item.key.slice(4) : undefined} />
                       <span>{item.name}</span>
-                      {item.app && <small>Mac app</small>}
+                      {item.app && <small>Desktop app</small>}
                       <div className="item-end">
                         {available ? (
                           <Access
@@ -362,7 +362,7 @@ export function Groups({
               <IdentityIcon site={item.key} appId={item.app ? item.key.slice(4) : undefined} />
               <span>{item.name}</span>
               <small className="item-end">
-                {item.app ? "Mac app" : "Website"}
+                {item.app ? "Desktop app" : "Website"}
               </small>
               {!item.app && (
                 <button

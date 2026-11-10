@@ -1,0 +1,30 @@
+name: Build Windows preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'windows/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: npm ci
+      - run: npm run build:ui
+      - run: cargo test --locked --workspace
+      - run: cargo build --locked --workspace
+      - run: python tests/windows-helper.py
+      - run: node --test tests/chess.mjs tests/puzzles.mjs
+      - run: npm run build:windows
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Fokus-windows-x64
+          path: dist/Fokus-windows-x64.zip

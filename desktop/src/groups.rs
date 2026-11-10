@@ -267,13 +267,7 @@ impl Rules {
             }
             AddApp { id, app } => {
                 let i = group(id)?;
-                if app.id.is_empty()
-                    || app.id.len() > 180
-                    || !app.id.contains('.')
-                    || !app
-                        .id
-                        .bytes()
-                        .all(|c| c.is_ascii_alphanumeric() || b".-_".contains(&c))
+                if !crate::blockable_app_id(&app.id)
                     || app.name.trim().is_empty()
                     || app.name.len() > 150
                     || [
@@ -285,7 +279,7 @@ impl Rules {
                     ]
                     .contains(&app.id.to_lowercase().as_str())
                 {
-                    return Err("Choose a blockable Mac application.".into());
+                    return Err("Choose a blockable application.".into());
                 }
                 if self.groups[i].apps.iter().any(|a| a.id == app.id) {
                     return Err("App already in this group.".into());

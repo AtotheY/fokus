@@ -1,0 +1,10 @@
+{
+  "bundle": { "icon": ["icons/icon.ico"] },
+  "app": {
+    "macOSPrivateApi": false,
+    "windows": [{
+      "label": "main", "title": "Fokus", "width": 1020, "height": 730,
+      "minWidth": 430, "minHeight": 490, "transparent": false, "center": true
+    }]
+  }
+}

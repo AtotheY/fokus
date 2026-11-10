@@ -1,4 +1,6 @@
 mod groups;
+#[cfg(windows)]
+pub mod windows_ipc;
 use chrono::{DateTime, Datelike, Duration, Local, TimeZone, Timelike};
 pub use groups::{Group, GroupEdit, MacApp};
 use serde::{Deserialize, Serialize};
@@ -350,20 +352,34 @@ pub fn hosts_content(original: &str, sites: &[String]) -> Result<String, String>
     Ok(kept)
 }
 pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
-    use std::os::unix::fs::OpenOptionsExt;
-    let temp = path.with_extension(format!("fokus-{}.tmp", std::process::id()));
-    let mut f = fs::OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .mode(0o600)
-        .open(&temp)?;
+    let temp = path.with_extension(format!("fokus-{}-{}.tmp", std::process::id(), fastrand::u64(..)));
+    let mut options = fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut f = options.open(&temp)?;
     let result = (|| {
         if let Ok(meta) = fs::metadata(path) {
             f.set_permissions(meta.permissions())?;
         }
         f.write_all(bytes)?;
         f.sync_all()?;
-        fs::rename(&temp, path)
+        drop(f);
+        #[cfg(not(windows))]
+        { fs::rename(&temp, path) }
+        #[cfg(windows)]
+        {
+            use std::os::windows::ffi::OsStrExt;
+            use windows_sys::Win32::Storage::FileSystem::{MoveFileExW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH};
+            let src: Vec<u16> = temp.as_os_str().encode_wide().chain(Some(0)).collect();
+            let dst: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
+            if unsafe { MoveFileExW(src.as_ptr(), dst.as_ptr(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) } == 0 {
+                Err(std::io::Error::last_os_error())
+            } else { Ok(()) }
+        }
     })();
     if result.is_err() {
         let _ = fs::remove_file(&temp);
@@ -583,5 +599,44 @@ mod tests {
         assert!(r.blocked(t + Duration::minutes(9)).is_empty());
         assert_eq!(r.blocked(t + Duration::minutes(10)), r.sites);
         assert!(r.blocked(t + Duration::hours(1)).is_empty());
+    }
+}
+
+/// Portable bundle IDs plus Windows executable paths. Critical OS processes and
+/// Fokus itself cannot be selected as distractions.
+pub fn blockable_app_id(id: &str) -> bool {
+    #[cfg(windows)]
+    if id.contains('\\') {
+        let path = std::path::Path::new(id);
+        let lower = id.to_lowercase();
+        let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
+        return id.len() <= 1024 && path.is_absolute() && lower.ends_with(".exe")
+            && !id.chars().any(|c| c.is_control() || c == '\"')
+            && !path.components().any(|c| matches!(c, std::path::Component::ParentDir))
+            && !["fokus.exe", "fokus-helper.exe", "explorer.exe", "taskmgr.exe", "cmd.exe", "powershell.exe", "pwsh.exe", "msiexec.exe", "uninstall.exe"].contains(&name.as_str())
+            && !lower.contains("\\windows\\");
+    }
+    !id.is_empty() && id.len() <= 180 && id.contains('.')
+        && id.bytes().all(|c| c.is_ascii_alphanumeric() || b".-_".contains(&c))
+}
+
+#[cfg(all(test, windows))]
+mod windows_tests {
+    use super::*;
+    #[test]
+    fn executable_paths_accept_spaces_and_reject_system_targets() {
+        assert!(blockable_app_id(r"c:\program files\example\example.exe"));
+        assert!(!blockable_app_id(r"c:\windows\system32\winlogon.exe"));
+        assert!(!blockable_app_id(r"c:\apps\fokus.exe"));
+        assert!(!blockable_app_id(r"c:\apps\..\windows\explorer.exe"));
+        assert!(!blockable_app_id(r"relative\game.exe"));
+    }
+    #[test]
+    fn atomic_replacement_updates_existing_windows_files() {
+        let path = std::env::temp_dir().join(format!("fokus-atomic-{}.json", fastrand::u64(..)));
+        write_atomic(&path, b"first").unwrap();
+        write_atomic(&path, b"second").unwrap();
+        assert_eq!(fs::read(&path).unwrap(), b"second");
+        fs::remove_file(path).unwrap();
     }
 }

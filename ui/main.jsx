@@ -1,3 +1,4 @@
+import { settingsShortcut } from "./platform";
 import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -444,14 +445,14 @@ function App() {
       return [
         "Enable website blocking",
         scheduled && hasItems
-          ? "Approve the Mac helper once. Blocking starts now and ends at " +
+          ? "Approve the blocking helper once. Blocking starts now and ends at " +
             when(state.transition) +
             "."
           : state?.nextStart
-            ? "Approve the Mac helper once. Blocking starts " +
+            ? "Approve the blocking helper once. Blocking starts " +
               when(state.nextStart) +
               "."
-            : "Approve the Mac helper once to use your block list.",
+            : "Approve the blocking helper once to use your block list.",
         "Enable blocking",
         ShieldCheck,
       ];
@@ -647,7 +648,7 @@ function App() {
                         <Sun />
                       )}
                       {!ready
-                        ? "Mac setup"
+                        ? "Blocker setup"
                         : paused && ready
                           ? "Timed break"
                           : scheduled
@@ -742,9 +743,9 @@ function App() {
                       "Your sites will be unblocked. Your list and working hours will be saved.",
                     focus: "How long would you like to block distractions?",
                     check:
-                      "Compare the blocking rule with the address macOS returns.",
+                      "Compare the blocking rule with the address your system returns.",
                     finish: state.needsUpdate
-                      ? "This control needs the updated Mac helper. Updating keeps your current session and saved hours."
+                      ? "This control needs the updated blocking helper. Updating keeps your current session and saved hours."
                       : "Open your sites for the rest of this work period. Your weekly schedule will continue automatically.",
                     break: dialog.domain
                       ? "Only this item will be open."

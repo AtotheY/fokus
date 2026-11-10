@@ -1,3 +1,4 @@
+import { isWindows } from "./platform";
 import React, { useEffect, useState } from "react";
 import { Check, FolderOpen, ArrowLeft } from "lucide-react";
 import { Button, SegmentedControl, Switch, Select } from "@radix-ui/themes";
@@ -17,7 +18,7 @@ const initial = {
   fades: false,
   adaptive: true,
   breakPause: false,
-  countActivity: true,
+  countActivity: !isWindows,
 };
 const palettes = {
   dark: {
@@ -341,12 +342,13 @@ export function Settings({
         <section>
           <h2>Window</h2>
           <div className="panel">
-            <Row label="Transparency">
+            <Row label="Transparency" hint={isWindows ? "Desktop transparency is unavailable in the Windows preview." : undefined}>
               <input
                 aria-label="Window transparency"
                 type="range"
                 min="0"
                 max="100"
+                disabled={isWindows}
                 value={p.transparency}
                 onChange={(e) => save({ transparency: Number(e.target.value) })}
               />
@@ -369,7 +371,7 @@ export function Settings({
                 "Adaptive header colour",
                 "Tint the landscape with your theme.",
               ],
-            ].map(([k, l, h]) => (
+            ].filter(([k]) => !isWindows || k !== "blur").map(([k, l, h]) => (
               <Row key={k} label={l} hint={h}>
                 <Switch
                   aria-label={l}
@@ -385,8 +387,8 @@ export function Settings({
         <section>
           <h2>Usage measurement</h2>
           <div className="panel">
-            <Row label="Count this Mac on active days" hint="Adds one to the daily total when you use Fokus. No device ID or activity details are sent.">
-              <Switch aria-label="Count this Mac on active days" checked={p.countActivity} onCheckedChange={countActivity => save({ countActivity })} />
+            <Row label="Count this computer on active days" hint={isWindows ? "Usage counting is disabled in the Windows preview." : "Adds one to the daily total when you use Fokus. No device ID or activity details are sent."}>
+              <Switch aria-label="Count this computer on active days" disabled={isWindows} checked={!isWindows && p.countActivity} onCheckedChange={countActivity => save({ countActivity })} />
             </Row>
           </div>
         </section>
@@ -430,7 +432,7 @@ export function Settings({
               hint={
                 ready
                   ? "Working hours and breaks continue when the window is closed."
-                  : "Allow the local helper to apply your block list on this Mac."
+                  : "Allow the local helper to apply your block list on this computer."
               }
             >
               <Button
@@ -443,7 +445,7 @@ export function Settings({
               </Button>
             </Row>
             {blockingSites && <Row label="Share a successful block"
-              hint="Optional. Opens the Fokus site with an anonymous setup receipt. Your block list stays on this Mac.">
+              hint="Optional. Opens the Fokus site with an anonymous setup receipt. Your block list stays on this computer.">
               <Button variant="soft" color="gray" onClick={async () => {
                 try {
                   const key = "fokus.setup-receipt";
