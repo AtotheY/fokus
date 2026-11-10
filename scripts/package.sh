@@ -38,9 +38,15 @@ for size in 16 32 128 256 512; do
   sips -z "$double" "$double" desktop/icons/icon.png --out "target/Fokus.iconset/icon_${size}x${size}@2x.png" >/dev/null
 done
 iconutil -c icns target/Fokus.iconset -o "$res/Fokus.icns"
+bash scripts/bundle-sparkle.sh "$app"
 sign=(--force --sign "${FOKUS_SIGN_IDENTITY:--}")
 if [[ -n "${FOKUS_SIGN_IDENTITY:-}" ]]; then
   sign+=(--options runtime --timestamp)
+  # Sign nested code inside out for hardened runtime library validation.
+  framework="$app/Contents/Frameworks/Sparkle.framework"
+  while IFS= read -r item; do
+    codesign "${sign[@]}" --preserve-metadata=entitlements "$item"
+  done < <(find "$framework" -depth \( -name '*.xpc' -o -name '*.app' -o -name 'Autoupdate' -o -name '*.framework' \))
 fi
 codesign "${sign[@]}" "$mac/fokus-helper"
 codesign "${sign[@]}" --entitlements desktop/entitlements.plist "$app"

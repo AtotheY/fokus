@@ -1,4 +1,5 @@
 mod activity;
+mod updater;
 mod comet;
 mod mac_apps;
 mod identity_icons;
@@ -408,6 +409,11 @@ fn main() {
     tauri::Builder::default()
         .manage(Store(Mutex::new(())))
         .setup(|app| {
+            if let Some(main) = objc2::MainThreadMarker::new() {
+                if let Err(error) = updater::start(main) {
+                    eprintln!("Fokus updater: {error}");
+                }
+            }
             menubar::install(app)?;
             comet::install(app.handle());
             Ok(())
@@ -422,13 +428,24 @@ fn main() {
             let menu = Menu::default(app)?;
             if let Some(MenuItemKind::Submenu(sub)) = menu.items()?.first() {
                 sub.insert(
+                    &MenuItem::with_id(app, "app-update", "Check for Updates…", true, None::<&str>)?,
+                    1,
+                )?;
+                sub.insert(
                     &MenuItem::with_id(app, "settings", "Settings…", true, Some("Cmd+,"))?,
-                    2,
+                    3,
                 )?;
             }
             Ok(menu)
         })
         .on_menu_event(|app, e| match e.id().as_ref() {
+            "app-update" => {
+                let _ = app.run_on_main_thread(|| {
+                    if let Some(main) = objc2::MainThreadMarker::new() {
+                        updater::check(main);
+                    }
+                });
+            }
             "menu-quit" => app.exit(0),
             "menu-open" => menubar::show(app, "open"),
             "menu-quick" => menubar::show(app, "quick"),

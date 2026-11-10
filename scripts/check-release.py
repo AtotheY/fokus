@@ -1,5 +1,6 @@
 """Reject private build paths and Mac metadata before publishing the installer."""
 import pathlib
+import plistlib
 import re
 import sys
 import zipfile
@@ -12,6 +13,11 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
     required = {"Fokus.app/Contents/MacOS/Fokus", "Fokus.app/Contents/MacOS/fokus-helper"}
     if not required <= names:
         sys.exit("Installer is missing an executable")
+    info = plistlib.loads(archive.read("Fokus.app/Contents/Info.plist"))
+    if "SUPublicEDKey" in info:
+        framework = "Fokus.app/Contents/Frameworks/Sparkle.framework/Versions/B/"
+        if not {framework + "Sparkle", framework + "Autoupdate"} <= names:
+            sys.exit("Installer is missing the bundled updater")
     for name in names:
         parts = pathlib.PurePosixPath(name).parts
         if parts[0] != "Fokus.app" or any(p.startswith(".") or p == "__MACOSX" for p in parts):

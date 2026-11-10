@@ -34,6 +34,9 @@ jobs:
           if [[ "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft 2>/dev/null)" == false ]]; then
             mkdir "$RUNNER_TEMP/verify"
             gh release download "$RELEASE_TAG" -D "$RUNNER_TEMP/verify" -p Fokus-arm64.zip -p SHA256SUMS.txt
+            if /usr/bin/python3 -c 'import plistlib; assert "SUPublicEDKey" in plistlib.load(open("desktop/Info.plist", "rb"))'; then
+              gh release download "$RELEASE_TAG" -D "$RUNNER_TEMP/verify" -p appcast.xml
+            fi
             (cd "$RUNNER_TEMP/verify" && sha256sum -c SHA256SUMS.txt)
             python3 scripts/check-release.py "$RUNNER_TEMP/verify/Fokus-arm64.zip"
             published=true
@@ -61,20 +64,40 @@ jobs:
           test "$version" = "$(node -p "require('./desktop/tauri.conf.json').version")"
           test "$version" = "$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' desktop/Info.plist)"
           test "$version" = "$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[] | select(.name=="fokus").version')"
+      - name: Verify the update advances the last published build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest=$(gh release view --json tagName --jq .tagName)
+          if gh release view "$latest" --json assets --jq '.assets[].name' | grep -qx appcast.xml; then
+            gh release download "$latest" -D "$RUNNER_TEMP" -p appcast.xml
+            python3 - "$RUNNER_TEMP/appcast.xml" <<'PY'
+          import plistlib, sys, xml.etree.ElementTree as ET
+          previous = ET.parse(sys.argv[1]).findtext('./channel/item/{http://www.andymatuschak.org/xml-namespaces/sparkle}version')
+          with open('desktop/Info.plist','rb') as f:
+              current = plistlib.load(f)['CFBundleVersion']
+          if int(current) <= int(previous):
+              raise SystemExit(f'Update build {current} must exceed published build {previous}')
+          PY
+          fi
       - run: npm ci
       - run: node --test tests/metrics.mjs && npm run build:ui && cargo test --locked --workspace
       - run: npm run build && python3 tests/helper.py
       - run: python3 scripts/check-release.py dist/Fokus-arm64.zip && node tests/puzzles.mjs && python3 tests/comet.py
+      - name: Sign update archive and feed
+        env:
+          FOKUS_SPARKLE_KEY: ${{ secrets.FOKUS_SPARKLE_KEY }}
+        run: bash scripts/make-appcast.sh "$RELEASE_TAG"
       - name: Publish verified assets together
         env:
           GH_TOKEN: ${{ github.token }}
         working-directory: dist
         run: |
-          shasum -a 256 Fokus-arm64.zip > SHA256SUMS.txt
+          shasum -a 256 Fokus-arm64.zip appcast.xml > SHA256SUMS.txt
           shasum -a 256 -c SHA256SUMS.txt
           if ! gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
             gh release create "$RELEASE_TAG" --verify-tag --draft --generate-notes
           fi
           test "$(gh release view "$RELEASE_TAG" --json isDraft --jq .isDraft)" = true
-          gh release upload "$RELEASE_TAG" Fokus-arm64.zip SHA256SUMS.txt --clobber
+          gh release upload "$RELEASE_TAG" Fokus-arm64.zip appcast.xml SHA256SUMS.txt --clobber
           gh release edit "$RELEASE_TAG" --draft=false --latest
