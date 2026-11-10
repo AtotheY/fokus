@@ -13,6 +13,8 @@ import {
   boardRange,
   chessPuzzle,
   playedPositions,
+  moveFrame,
+  solutionPositions,
   ratingRanges,
   rangeLabel,
 } from "./chess-rules.mjs";
@@ -82,12 +84,15 @@ function BoardSurface({ frame, side, legal, onMove }) {
       if (!dests.has(from)) dests.set(from, []);
       dests.get(from).push(to);
     }
+    const position = new Chess(frame.fen);
+    const turnColor = colorName(position.turn());
     api.current.cancelMove();
     api.current.set({
       fen: frame.fen,
       lastMove: frame.lastMove,
-      turnColor: colorName(new Chess(frame.fen).turn()),
-      movable: { color: legal.length ? colorName(side) : undefined, dests },
+      turnColor,
+      check: position.isCheck(),
+      movable: { color: legal.length ? turnColor : undefined, dests },
     });
   }, [frame, side, legal]);
   return (
@@ -107,30 +112,66 @@ function BoardSurface({ frame, side, legal, onMove }) {
 }
 
 export function ChessPuzzle({ board, save, onRange, shortcutScope }) {
-  const frames = useMemo(() => playedPositions(board), [board]);
+  const puzzleFrames = useMemo(() => playedPositions(board), [board]);
   const [cursor, setCursor] = useState(board.ply === 1 ? 0 : board.ply);
   const [autoAdvance, setAutoAdvance] = useState(board.ply === 1);
   const [promotion, setPromotion] = useState(null);
   const [feedback, setFeedback] = useState("");
-  const [attempt, setAttempt] = useState(0);
+  const [variation, setVariation] = useState(null);
+  const [miss, setMiss] = useState(null);
+  const [showMiss, setShowMiss] = useState(false);
   const [typed, setTyped] = useState("");
-  const frame = frames[cursor];
-  const live = cursor === board.ply;
-  const canPlay = live && !board.ended && !promotion;
-  // A rejected drag also needs a board sync, even if the position is unchanged.
+  const frames = variation ?? puzzleFrames;
+  const frame = showMiss ? miss : frames[cursor];
+  const lastPly = frames.length - 1;
+  const live = !variation && cursor === board.ply;
+  const solving = live && !board.ended;
+  const position = useMemo(() => new Chess(frame.fen), [frame]);
+  const canPlay = !autoAdvance && !showMiss && !promotion;
   const legal = useMemo(
-    () => (canPlay ? new Chess(frame.fen).moves({ verbose: true }) : []),
-    [frame, canPlay, attempt],
+    () => (canPlay ? position.moves({ verbose: true }) : []),
+    [position, canPlay],
   );
-  const side = board.side === "w" ? "White" : "Black";
+  const side = position.turn() === "w" ? "White" : "Black";
+  const status = showMiss
+    ? "Try again"
+    : autoAdvance
+      ? "Opponent’s move"
+      : variation
+        ? position.isCheckmate()
+          ? "Checkmate"
+          : position.isStalemate()
+            ? "Stalemate"
+            : side + " to move"
+        : !live
+          ? "Reviewing"
+          : board.ended
+            ? "Finished"
+            : side + " to move";
 
-  function review(offset) {
+  function navigate(line, ply) {
     setAutoAdvance(false);
+    setShowMiss(false);
     setPromotion(null);
     setFeedback("");
     setTyped("");
-    setCursor((i) => Math.max(0, Math.min(i + offset, board.ply)));
+    setVariation(line);
+    setCursor(ply);
   }
+  function review(offset) {
+    const next = cursor + offset + (showMiss ? 1 : 0);
+    navigate(variation, Math.max(0, Math.min(next, lastPly)));
+  }
+  function explore() {
+    const line = frames.slice(0, cursor + 1);
+    if (live && miss) line.push(miss);
+    navigate(line, line.length - 1);
+  }
+  useEffect(() => {
+    if (!showMiss) return;
+    const timer = setTimeout(() => setShowMiss(false), 300);
+    return () => clearTimeout(timer);
+  }, [showMiss, miss]);
   useEffect(() => {
     if (!autoAdvance) return;
     const timer = setTimeout(() => {
@@ -162,18 +203,25 @@ export function ChessPuzzle({ board, save, onRange, shortcutScope }) {
     }
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, [board.ply, shortcutScope]);
+  }, [cursor, lastPly, variation, showMiss, shortcutScope]);
 
   function play(move) {
     setPromotion(null);
-    const next = acceptChessMove(board, move);
-    if (!next) {
-      setFeedback("Try another move.");
-      setAttempt((n) => n + 1);
+    if (!solving) {
+      const line = [...frames.slice(0, cursor + 1), moveFrame(move)];
+      navigate(line, line.length - 1);
       return;
     }
+    const next = acceptChessMove(board, move);
+    if (!next) {
+      setMiss(moveFrame(move));
+      setShowMiss(true);
+      setFeedback(move.san + " misses the tactic. Try again.");
+      return;
+    }
+    setMiss(null);
     save(next);
-    setFeedback("Correct. Find the next move.");
+    setFeedback(next.ended ? "" : "Correct. Find the next move.");
     setCursor(board.ply + 1);
     setAutoAdvance(next.ply > board.ply + 1);
   }
@@ -218,13 +266,7 @@ export function ChessPuzzle({ board, save, onRange, shortcutScope }) {
       />
       <div className="chess-underboard">
         <span className="chess-turn" role="status">
-          {!live
-            ? autoAdvance
-              ? "Opponent’s move"
-              : "Reviewing"
-            : board.ended
-              ? "Finished"
-              : side + " to move"}
+          {status}
         </span>
         <div className="chess-history" role="group" aria-label="Move history">
           <button
@@ -241,7 +283,7 @@ export function ChessPuzzle({ board, save, onRange, shortcutScope }) {
             className="puzzle-icon-button"
             aria-label="Next move"
             title="Next move (→)"
-            disabled={live}
+            disabled={cursor >= lastPly}
             onClick={() => review(1)}
           >
             <ChevronRight size={17} />
@@ -261,7 +303,7 @@ export function ChessPuzzle({ board, save, onRange, shortcutScope }) {
               aria-label={"Promote to " + pieces[move.promotion]}
               onClick={() => play(move)}
             >
-              <img src={pieceImage(board.side, move.promotion)} alt="" />
+              <img src={pieceImage(move.color, move.promotion)} alt="" />
             </button>
           ))}
         </div>
@@ -277,11 +319,41 @@ export function ChessPuzzle({ board, save, onRange, shortcutScope }) {
           <button type="submit">Play</button>
         </form>
       )}
-      {feedback && live && !board.ended && (
+      {feedback && (
         <p className="play-hint" role="status">
           {feedback}
         </p>
       )}
+      <div className="chess-study-actions">
+        {variation ? (
+          <button
+            className="text-action"
+            onClick={() => navigate(null, board.ply)}
+          >
+            Return to puzzle
+          </button>
+        ) : (
+          <>
+            <button
+              className="text-action"
+              disabled={autoAdvance}
+              onClick={explore}
+            >
+              {miss && live ? "Explore this move" : "Explore position"}
+            </button>
+            {miss && live && (
+              <button
+                className="text-action"
+                onClick={() =>
+                  navigate(solutionPositions(board), board.ply + 1)
+                }
+              >
+                View solution
+              </button>
+            )}
+            </>
+        )}
+      </div>
     </>
   );
 }
