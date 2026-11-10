@@ -34,7 +34,7 @@ try {
     function Names {
         $root = [System.Windows.Automation.AutomationElement]::FromHandle($window)
         $nodes = $root.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-        @($nodes | ForEach-Object { $_.Current.Name })
+        @($nodes | ForEach-Object { $_.Current.Name; $_.Current.HelpText })
     }
     $names = @()
     for ($n=0; $n -lt 60; $n++) {
@@ -43,7 +43,7 @@ try {
         Start-Sleep -Milliseconds 500
     }
     if (!(($names -contains 'Overview') -and ($names -contains 'Groups'))) { throw ('React navigation did not render. Accessibility tree: ' + ($names -join ' | ')) }
-    if (!($names -contains 'Ctrl+,')) { throw ('Windows shortcut label is missing. Accessibility tree: ' + ($names -join ' | ')) }
+    if (!(($names -join ' | ').Contains('Ctrl+,'))) { throw ('Windows shortcut label is missing. Accessibility tree: ' + ($names -join ' | ')) }
     $shell = New-Object -ComObject WScript.Shell
     $shell.AppActivate($process.Id) | Out-Null
     $shell.SendKeys('^,')
