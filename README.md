@@ -1,6 +1,6 @@
 # Fokus for Mac
 
-A Windows preview port is in progress in this source tree. See
+A Windows preview port is available in this source tree. See
 [Windows setup and build instructions](docs/WINDOWS.md). Build it with
 `npm run build:windows`; the existing `npm run build` still builds macOS.
 See [verification status](docs/WINDOWS-PORT-STATUS.md) for remaining checks.

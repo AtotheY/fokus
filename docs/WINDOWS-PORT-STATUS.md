@@ -1,41 +1,43 @@
 # Windows port verification
 
-Implementation includes a Windows-service hosts blocker, owner-restricted local
-named-pipe protocol, desktop executable selection and foreground minimization,
-shared focus rules and puzzles, tray integration, UAC setup/removal scripts,
+Verified Windows preview: 2026-11-10, source commit `69821f8`.
+
+[Passing Windows build and test run](https://github.com/Kismat-Adhikari06/fokus/actions/runs/42759953368)
+
+Passed on the isolated Windows runner:
+
+- Native Rust compilation and 12 Rust tests.
+- All eight chess and puzzle tests.
+- Real named-pipe helper requests, executable rule IDs and protected app
+  rejection, timed app/site exceptions, whole-list breaks, invalid edits,
+  persistence, automatic break expiry and exact hosts-file restoration.
+- Release ZIP packaging.
+- The shipped release opens a native window and renders React navigation.
+  Ctrl+, opens Settings. The window fits the monitor work area without
+  overlapping the taskbar; the test captured a screenshot.
+- Actual Windows service installation, hosts enforcement, timed breaks,
+  reinstall/reconnect preserving authoritative rules, and service removal.
+
+The preview includes a background website blocker, tray controls, desktop app
+selection and foreground minimization, schedules, puzzles, UAC setup/removal,
 Windows appearance/keyboard adaptations, and portable ZIP packaging.
+Foreground minimization is implemented but has not had an automated end-to-end
+foreground-window test. Elevated windows and apps without executable Start-menu
+shortcuts remain documented limitations. Comet tab automation, automatic Windows
+updates, desktop background blur and usage counting are unavailable.
 
-Verified locally on 2026-11-10:
+## This PC
 
-- `npm ci`: successful, audit reported zero vulnerabilities.
-- `npm run build:ui`: successful.
-- `node --test tests/chess.mjs tests/puzzles.mjs`: eight tests passed.
-- Windows PowerShell setup, removal and packaging scripts parse successfully.
-- Rust formatting parses the new Windows source files successfully.
-- The Windows Start-menu scanner ran successfully and returned 77 executable
-  shortcuts with valid JSON records.
-- Installer permission-rule constructors were exercised in memory successfully.
+Smart App Control is enabled here. Local Rust build programs and a direct launch
+of the downloaded executable were both rejected with Windows Application Control
+error 4551. The finished preview therefore cannot currently run on this PC.
+No Windows security policy was changed. No blocker service was installed and
+production hosts were not modified locally.
 
-Native compilation is currently blocked by this PC's enforced Windows Smart
-App Control policy (state 1). Cargo cannot execute generated dependency build
-scripts, returning Windows error 4551. Code Integrity events 3033 and 3077
-identify the blocked executables and policy
-`{0283AC0F-FFF1-49AE-ADA1-8A933130CAD6}`. No security policy was changed.
+Running here requires addressing the trust restriction, such as providing a
+trusted signed build. The unsigned preview can be used on a Windows development
+machine that permits it. See [Windows instructions](WINDOWS.md).
 
-The first GitHub Windows run has now passed native compilation, Rust tests,
-the disposable-hosts helper integration tests and all eight puzzle tests:
-https://github.com/Kismat-Adhikari06/fokus/actions/runs/42756697666
-
-Release packaging and the packaged desktop/service checks remain in progress.
-Required checks before this preview is ready:
-
-1. `cargo check --workspace` and `cargo test --locked --workspace`.
-2. `cargo build --locked --workspace` and `python tests/windows-helper.py`.
-3. `npm run build:windows` and a native desktop launch check.
-4. Administrator service setup/removal and foreground app protection checks
-   on a development/test Windows machine.
-
-The Windows workflow runs the compilation, rules tests, disposable-hosts helper
-tests, puzzle tests and release packaging, and uploads the ZIP as a build
-artifact. Production hosts and installed services have not been modified by
-the local checks.
+The executable and resources are saved locally in `dist/Fokus-windows-x64/`;
+the distributable ZIP is `dist/Fokus-windows-x64.zip`. GitHub Actions also retains
+ZIP and desktop screenshot artifacts on the passing run above.
