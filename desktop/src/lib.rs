@@ -360,7 +360,11 @@ pub fn hosts_content(original: &str, sites: &[String]) -> Result<String, String>
     Ok(kept)
 }
 pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
-    let temp = path.with_extension(format!("fokus-{}-{}.tmp", std::process::id(), fastrand::u64(..)));
+    let temp = path.with_extension(format!(
+        "fokus-{}-{}.tmp",
+        std::process::id(),
+        fastrand::u64(..)
+    ));
     let mut options = fs::OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]
@@ -377,16 +381,29 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
         f.sync_all()?;
         drop(f);
         #[cfg(not(windows))]
-        { fs::rename(&temp, path) }
+        {
+            fs::rename(&temp, path)
+        }
         #[cfg(windows)]
         {
             use std::os::windows::ffi::OsStrExt;
-            use windows_sys::Win32::Storage::FileSystem::{MoveFileExW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH};
+            use windows_sys::Win32::Storage::FileSystem::{
+                MoveFileExW, MOVEFILE_REPLACE_EXISTING, MOVEFILE_WRITE_THROUGH,
+            };
             let src: Vec<u16> = temp.as_os_str().encode_wide().chain(Some(0)).collect();
             let dst: Vec<u16> = path.as_os_str().encode_wide().chain(Some(0)).collect();
-            if unsafe { MoveFileExW(src.as_ptr(), dst.as_ptr(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) } == 0 {
+            if unsafe {
+                MoveFileExW(
+                    src.as_ptr(),
+                    dst.as_ptr(),
+                    MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
+                )
+            } == 0
+            {
                 Err(std::io::Error::last_os_error())
-            } else { Ok(()) }
+            } else {
+                Ok(())
+            }
         }
     })();
     if result.is_err() {
@@ -633,15 +650,38 @@ pub fn blockable_app_id(id: &str) -> bool {
     if id.contains('\\') {
         let path = std::path::Path::new(id);
         let lower = id.to_lowercase();
-        let name = path.file_name().and_then(|n| n.to_str()).unwrap_or("").to_lowercase();
-        return id.len() <= 1024 && path.is_absolute() && lower.ends_with(".exe")
+        let name = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("")
+            .to_lowercase();
+        return id.len() <= 1024
+            && path.is_absolute()
+            && lower.ends_with(".exe")
             && !id.chars().any(|c| c.is_control() || c == '\"')
-            && !path.components().any(|c| matches!(c, std::path::Component::ParentDir))
-            && !["fokus.exe", "fokus-helper.exe", "explorer.exe", "taskmgr.exe", "cmd.exe", "powershell.exe", "pwsh.exe", "msiexec.exe", "uninstall.exe"].contains(&name.as_str())
+            && !path
+                .components()
+                .any(|c| matches!(c, std::path::Component::ParentDir))
+            && ![
+                "fokus.exe",
+                "fokus-helper.exe",
+                "explorer.exe",
+                "taskmgr.exe",
+                "cmd.exe",
+                "powershell.exe",
+                "pwsh.exe",
+                "msiexec.exe",
+                "uninstall.exe",
+            ]
+            .contains(&name.as_str())
             && !lower.contains("\\windows\\");
     }
-    !id.is_empty() && id.len() <= 180 && id.contains('.')
-        && id.bytes().all(|c| c.is_ascii_alphanumeric() || b".-_".contains(&c))
+    !id.is_empty()
+        && id.len() <= 180
+        && id.contains('.')
+        && id
+            .bytes()
+            .all(|c| c.is_ascii_alphanumeric() || b".-_".contains(&c))
 }
 
 #[cfg(all(test, windows))]
