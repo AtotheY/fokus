@@ -20,7 +20,7 @@ Use **Settings → Blocker → Uninstall blocker** before removing Fokus to clea
 
 ## Build on macOS
 
-Install Xcode Command Line Tools, Node.js 20+ and stable Rust. Build on the architecture where the app will run.
+Install Xcode Command Line Tools, Node.js 22.13+ and stable Rust. Build on the architecture where the app will run.
 
 ```sh
 npm ci
