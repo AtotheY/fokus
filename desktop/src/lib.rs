@@ -314,6 +314,14 @@ pub fn hostnames(sites: &[String]) -> BTreeSet<String> {
                 "instagr.am",
                 "www.instagr.am",
             ],
+            "youtube.com" => &[
+                "m.youtube.com",
+                "music.youtube.com",
+                "youtu.be",
+                "www.youtu.be",
+                "youtube-nocookie.com",
+                "www.youtube-nocookie.com",
+            ],
             _ => &[],
         };
         names.extend(aliases.iter().map(|s| s.to_string()));
@@ -504,6 +512,22 @@ mod tests {
         );
         assert_eq!(hosts_content(&blocked, &[]).unwrap(), original);
         assert!(hosts_content(&format!("{START}\n"), &[]).is_err());
+    }
+    #[test]
+    fn youtube_rules_cover_common_alias_hosts() {
+        let hosts = hostnames(&["youtube.com".into()]);
+        for host in [
+            "youtube.com",
+            "www.youtube.com",
+            "m.youtube.com",
+            "music.youtube.com",
+            "youtu.be",
+            "www.youtu.be",
+            "youtube-nocookie.com",
+            "www.youtube-nocookie.com",
+        ] {
+            assert!(hosts.contains(host), "missing {host}");
+        }
     }
     #[test]
     fn early_finish_applies_to_one_overnight_shift() {
