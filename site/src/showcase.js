@@ -1,18 +1,4 @@
 const one=s=>document.querySelector(s), all=s=>[...document.querySelectorAll(s)];
-function platform(os){
-  const win=os==='windows';
-  all('[data-os]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.os===os));
-  one('.platforms').classList.toggle('windows',win);
-  const action=one('.download-main');action.href=win?'#sample':action.dataset.release;
-  action.toggleAttribute('data-download',!win);action.toggleAttribute('download',!win);
-  one('#setup-link').hidden=win;
-  action.querySelector('span').textContent=win?'Try the web preview':'Download Fokus';
-  action.querySelector('svg').style.display=win?'none':'';
-  one('#compat').textContent=win?'No Windows download yet.':'Free · Apple Silicon · macOS 12+';
-}
-all('[data-os]').forEach(b=>b.onclick=()=>platform(b.dataset.os));
-const choice=new URLSearchParams(location.search).get('platform');
-platform(choice==='windows'||(choice!=='mac'&&/Win/i.test(navigator.platform))?'windows':'mac');
 const dayBtns=all('[data-day]');
 dayBtns.forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true'));
 const format=t=>new Date('2000-01-01T'+t).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});

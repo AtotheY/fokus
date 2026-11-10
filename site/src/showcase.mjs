@@ -1,9 +1,8 @@
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
-import {ArrowDown, ArrowDownToLine, CalendarClock, Check, ChevronDown, Laptop, LockKeyhole, UsersRound} from 'lucide-react';
+import {ArrowDown, ArrowDownToLine, CalendarClock, Check, ChevronDown, LockKeyhole, UsersRound} from 'lucide-react';
 const ico=(component,size=16)=>renderToStaticMarkup(React.createElement(component,{size,strokeWidth:1.65,'aria-hidden':true}));
 const domains=['reddit.com','x.com','instagram.com'];
-const windows='<svg viewBox="0 0 18 18" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M1 1h7v7H1zm9 0h7v7h-7zM1 10h7v7H1zm9 0h7v7h-7z"/></svg>';
 const accessPreview=`<div class="summary"><div class="label">${ico(CalendarClock,14)} Working hours</div><h2 id="count">3 sites blocked</h2><p>Session ends at 5:00 PM</p></div><div class="group"><div class="group-name">${ico(ChevronDown,13)} ${ico(UsersRound,17)} <b>Social media</b><small>3 sites</small></div>${domains.map(s=>`<div class="site"><img width="23" height="23" src="/assets/${s}.png" alt=""><span>${s}</span><button class="lock" data-site="${s}" aria-label="Temporarily unblock ${s}">${ico(LockKeyhole,13)}<span>Unblock</span></button></div>`).join('')}</div><div id="pop" hidden role="group" aria-label="Manage site access"></div><div id="message" class="instruction" role="status">Choose Unblock next to reddit.com.</div>`;
 const schedulePreview=`<div class="schedule"><b>Working days</b><div class="days">${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'].map((d,i)=>`<button data-day aria-label="${d}" aria-pressed="${i<5}">${d.slice(0,1)}</button>`).join('')}</div><div class="times"><label>Start<input type="time" id="start" value="09:00" required></label><label>End<input type="time" id="end" value="17:00" required></label></div><button id="save-hours">${ico(Check,14)} Save hours</button><p role="status" id="hours-result">Monday–Friday, 9:00 AM–5:00 PM</p></div>`;
 function appWindow(title, body, isDemo = true) {
@@ -15,7 +14,7 @@ function appWindow(title, body, isDemo = true) {
 }
 export function home({zip, repository}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
-    <h1>Skip the doomscroll <em>between prompts.</em></h1><p class="pitch">Fokus blocks your feeds and gives you a brain teaser while your agent codes.</p><div class="download-box"><div class="platforms" role="group" aria-label="Operating system"><i></i><button aria-pressed="true" data-os="mac">${ico(Laptop,18)} macOS</button><button aria-pressed="false" data-os="windows">${windows} Windows</button></div><a class="download-main" data-download data-release="${zip}" href="${zip}" download><span>Download Fokus</span>${ico(ArrowDownToLine,17)}</a><small><span id="compat" aria-live="polite">Free · Apple Silicon · macOS 12+</span> <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#sample">Try a site break ${ico(ArrowDown,14)}</a></section>
+    <h1>Skip the doomscroll <em>between prompts.</em></h1><p class="pitch">Fokus blocks your feeds and gives you a brain teaser while your agent codes.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#sample">Try a site break ${ico(ArrowDown,14)}</a></section>
 <div class="features">
   <section id="sample" class="feature-row">
     <div class="feature-copy">
