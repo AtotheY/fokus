@@ -5,7 +5,7 @@ A Windows preview port is available in this source tree. See
 `npm run build:windows`; the existing `npm run build` still builds macOS.
 See [verification status](docs/WINDOWS-PORT-STATUS.md) for remaining checks.
 
-Open Fokus and choose **Enable blocking**. macOS requests administrator approval to install the local helper. Social media is enabled by default, including X, Reddit, Instagram, Facebook and LinkedIn. Working hours default to Monday–Friday, 9 AM–5 PM in the Mac’s local time zone.
+Open Fokus and choose **Enable blocking**. macOS requests administrator approval to install the local helper. Social media is enabled by default, including X, Reddit, Instagram, Facebook, LinkedIn and YouTube. Working hours default to Monday–Friday, 9 AM–5 PM in the Mac’s local time zone.
 
 - **Overview** has collapsible session groups. Switch a group on or off for the current session. Use an item’s lock for 1, 5 or 15 minutes of access. The time chip lets you block it again early.
 - **Groups** lets you create groups, edit their defaults, paste domains, and choose installed Mac apps. Existing website lists migrate into an enabled group. Additional presets start off. The four editable presets cover social networks, gaming, shopping and adult sites. The domain files in `desktop/presets/` are bundled offline. They are curated from [HaGeZi](https://github.com/hagezi/dns-blocklists), [v2fly](https://github.com/v2fly/domain-list-community/tree/master/data) and [Similarweb’s category rankings](https://www.similarweb.com/top-websites/).

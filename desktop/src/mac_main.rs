@@ -43,7 +43,7 @@ fn pending(app: &tauri::AppHandle) -> Result<Rules, String> {
     } else {
         Rules::default()
     };
-    let marker = dir.join("pending-presets-v1-applied");
+    let marker = dir.join("pending-presets-v2-applied");
     if !marker.exists() {
         let changes = rules.preset_additions();
         if !changes.is_empty() {
@@ -89,7 +89,7 @@ fn cache_rules(app: &tauri::AppHandle, rules: &Value) -> Result<(), String> {
 // Helpers shipped before the catalogue already support ordinary group edits. Use
 // their socket so installing new site data does not require macOS authorization.
 fn upgrade_installed_presets(app: &tauri::AppHandle, state: &mut Value) -> Result<(), String> {
-    let marker = data(app)?.join("presets-v1-applied");
+    let marker = data(app)?.join("presets-v2-applied");
     if !marker.exists() {
         let rules: Rules =
             serde_json::from_value(state["rules"].clone()).map_err(|e| e.to_string())?;
