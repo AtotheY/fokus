@@ -14,7 +14,7 @@ function appWindow(title, body, isDemo = true) {
 }
 export function home({zip, repository}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
-    <h1>Skip the doomscroll <em>between prompts.</em></h1><p class="pitch">Block the feeds, crack a puzzle, and come back sharp when your agent’s done.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#sample">Try a site break ${ico(ArrowDown,14)}</a></section>
+    <h1>Skip the doomscroll <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While you wait for your coding agent, you can play Word Search or Minesweeper.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#sample">Try a site break ${ico(ArrowDown,14)}</a></section>
 <div class="features">
   <section id="sample" class="feature-row">
     <div class="feature-copy">
