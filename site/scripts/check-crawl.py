@@ -29,7 +29,7 @@ class Page(HTMLParser):
         if tag == "img":
             self.links.add(attrs["src"])
         if tag == "meta":
-            self.meta[attrs.get("name")] = attrs.get("content", "")
+            self.meta[attrs.get("name") or attrs.get("property")] = attrs.get("content", "")
         if tag == "link" and attrs.get("rel") == "canonical":
             self.canonical = attrs["href"]
         if tag == "h1":
@@ -56,6 +56,7 @@ sitemap = ET.fromstring(fetch(BASE + "/sitemap.xml")[0])
 urls = [node.text for node in sitemap.findall(".//{*}loc")]
 destinations, titles, descriptions = set(), set(), set()
 report = {}
+share_images = set()
 for url in urls:
     raw, headers, final = fetch(url)
     page = Page()
@@ -64,6 +65,13 @@ for url in urls:
     assert page.headings == 1 and page.title and page.meta["description"]
     assert page.title not in titles and page.meta["description"] not in descriptions
     assert "noindex" not in (page.meta.get("robots", "") + headers.get("X-Robots-Tag", "")).lower()
+    assert page.meta["og:url"] == url and page.meta["og:title"] == page.title
+    assert page.meta["twitter:card"] == "summary_large_image"
+    assert page.meta["og:description"] == page.meta["description"]
+    assert page.meta["twitter:image"] == page.meta["og:image"]
+    assert page.meta["og:image:alt"] and page.meta["og:image:type"] == "image/jpeg"
+    assert (page.meta["og:image:width"], page.meta["og:image:height"]) == ("1200", "630")
+    share_images.add(page.meta["og:image"])
     titles.add(page.title)
     descriptions.add(page.meta["description"])
     destinations.update(urljoin(url, ref).split("#")[0] for ref in page.links if urlsplit(urljoin(url, ref)).netloc == "usefokus.dev")
@@ -75,6 +83,11 @@ for link in sorted(destinations - set(urls)):
     if local.is_dir():
         local = local / "index.html"
     assert local.is_file() and hashlib.sha256(raw).digest() == hashlib.sha256(local.read_bytes()).digest()
+assert len(share_images) == 4
+for url in share_images:
+    raw, headers, final = fetch(url, "Twitterbot/1.0")
+    assert final == url and headers.get_content_type() == "image/jpeg"
+    assert raw == (DIST / urlsplit(url).path.lstrip("/")).read_bytes()
 guide = next(url for url in urls if "temporarily-unblock" in url)
 for ua in ["Googlebot", "OAI-SearchBot", "ChatGPT-User", "PerplexityBot"]:
     raw, headers, final = fetch(guide, ua)
@@ -89,4 +102,4 @@ try:
 except urllib.error.HTTPError as error:
     assert error.code == 404
 print(json.dumps({"indexable_pages": report, "internal_destinations":len(destinations),
-                  "source_html_matches":True,"crawler_user_agents_passed":4,"missing_path":404},indent=2))
+                  "share_images_verified":len(share_images),"source_html_matches":True,"crawler_user_agents_passed":4,"missing_path":404},indent=2))

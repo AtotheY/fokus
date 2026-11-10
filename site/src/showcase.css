@@ -316,3 +316,12 @@
   .deck-copy { padding-bottom: 3px; }
   .deck-copy p { margin-top: 6px; font-size: 14px; }
 }
+
+@media (max-width: 360px) {
+  .hero-title h1 em { text-wrap: balance; }
+  .sunset-scene .sun-disc { bottom: 12%; }
+  .home .nav > div { padding-inline: 12px; }
+  .home .nav nav { gap: 8px; }
+  .home .nav nav a { white-space: nowrap; font-size: 11px; }
+  .deck-card .chess-tools { font-size: 12px; gap: 3px; }
+}

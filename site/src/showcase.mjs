@@ -1,3 +1,4 @@
+import {pitch} from './search.mjs';
 import React from 'react';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {ArrowDown, ArrowDownToLine, CalendarClock, Check, ChevronDown, LockKeyhole, UsersRound} from 'lucide-react';
@@ -14,7 +15,7 @@ function appWindow(title, body, isDemo = true) {
 }
 export function home({zip, repository, chess, mines, daily, startingId}){return `<section class="exhibit-hero"><div class="sunset-scene" aria-hidden="true"><span class="sun-disc"></span></div>
   <div class="hero-inner"><div class="hero-title">
-    <h1>A mental workout <em>between prompts.</em></h1><p class="pitch">Fokus blocks distracting websites and apps on your Mac. While your agent codes, use the time you’d usually spend scrolling to work through a chess puzzle.</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a chess puzzle ${ico(ArrowDown,14)}</a></section>
+    <h1>${pitch.headline[0]} <em>${pitch.headline[1]}</em></h1><p class="pitch">${pitch.body}</p><div class="download-box"><a class="download-main" data-download href="${zip}" download><span>Download Fokus for Mac</span>${ico(ArrowDownToLine,17)}</a><small>Free · Apple Silicon · macOS 12+ <a id="setup-link" href="/download/" aria-label="Mac installation help">Setup</a></small></div></div></div><a class="preview-jump" href="#whats-new">Try a chess puzzle ${ico(ArrowDown,14)}</a></section>
 <noscript><style>
 .deck-track::after,.deck-nav{display:none}.deck-track .deck-pin{position:static}.deck-cards{gap:30px}
 .deck-card[data-depth]{grid-area:auto;transform:none}

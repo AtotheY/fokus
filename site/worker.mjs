@@ -12,6 +12,13 @@ export default {
     }
     if(url.pathname!=='/api/event'){
       const asset=await env.ASSETS.fetch(request);
+      // Some older asset uploads stored the static chess pieces as binary downloads.
+      if (asset.ok && url.pathname.startsWith('/chess/') && url.pathname.endsWith('.svg') &&
+          asset.headers.get('content-type') === 'application/octet-stream') {
+        const image = new Response(asset.body, asset);
+        image.headers.set('Content-Type', 'image/svg+xml');
+        return image;
+      }
       if(!asset.headers.get('content-type')?.startsWith('text/html'))return asset;
       const html=new Response(asset.body,asset);
       html.headers.set('Cache-Control','public, max-age=0, must-revalidate, no-transform');

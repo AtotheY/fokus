@@ -1,5 +1,7 @@
 import fs from 'node:fs';
 import {build} from 'esbuild';
+import {createHash} from 'node:crypto';
+import {pitch, productCard, guideCards} from './src/search.mjs';
 import path from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {repository, releases, latest, macDownload, checksums} from './src/release.mjs';
@@ -51,6 +53,15 @@ await build({
 });
 const {previews} = await import(pathToFileURL(serverBundle));
 fs.rmSync(path.dirname(serverBundle), {recursive: true});
+// A new image URL lets unfurlers fetch changed artwork when they revisit the page.
+const shareImages = new Map();
+for (const card of [productCard, ...Object.values(guideCards)]) {
+  const bytes = fs.readFileSync(path.join(root, 'social', card.file));
+  const digest = createHash('sha256').update(bytes).digest('hex').slice(0, 10);
+  const file = card.file.replace('.jpg', '-' + digest + '.jpg');
+  fs.writeFileSync(path.join(assets, file), bytes);
+  shareImages.set(card, base + '/assets/' + file);
+}
 const esc = text => text.replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;');
 const icon = (name,size=18)=>renderToStaticMarkup(React.createElement(name,{size,'aria-hidden':true,'strokeWidth':1.65}));
 const brand = '<a class="brand" href="/"><img width="40" height="40" src="/assets/ceramic.png" alt="">Fokus</a>';
@@ -60,8 +71,40 @@ const arrow = icon(ArrowRight);
 const pageRecords=[];
 function save(file,content){fs.mkdirSync(path.dirname(path.join(out,file)),{recursive:true});fs.writeFileSync(path.join(out,file),content)}
 function page(url,title,desc,body,{article=null,hidden=false,home=false}={}){
-  const tags=article?{'@context':'https://schema.org','@type':'TechArticle',headline:title,description:desc,datePublished:article.date,dateModified:article.date,author:{'@type':'Organization',name:'Fokus'},mainEntityOfPage:base+url}:null;
-  save(url==='404'?'404.html':url.slice(1)+'index.html',`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} · Fokus</title><meta name="description" content="${esc(desc)}">${hidden?'<meta name="robots" content="noindex">':'<link rel="canonical" href="'+base+url+'">'}<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:image" content="${base}/assets/ceramic.png"><link rel="icon" href="/assets/ceramic.png"><link rel="stylesheet" href="/assets/site.css">${home?'<link rel="stylesheet" href="/assets/showcase.css"><link rel="stylesheet" href="/assets/puzzle-preview.css">':''}<link rel="alternate" type="application/rss+xml" href="/feed.xml" title="Fokus guides">${tags?'<script type="application/ld+json">'+JSON.stringify(tags)+'</script>':''}<script defer src="/assets/measure.js"></script></head><body class="${home?'home':''}"><a class="skip" href="#main">Skip to content</a><header class="nav"><div>${brand}<nav aria-label="Main"><a href="/#whats-new">Puzzle breaks</a><a href="/#sample">Blocking</a><a href="${repository}">GitHub ↗</a></nav></div></header><main id="main">${body}</main><footer>${brand}<div class="footer-links"><a href="${repository}">GitHub ↗</a><a href="${releases}">Release notes</a></div><a href="/privacy/">Privacy</a></footer></body></html>`);
+  const canonical = new URL(url, base).href;
+  const card = (article && guideCards[article.slug]) || productCard;
+  const image = shareImages.get(card);
+  const pageTitle = home ? 'Fokus – ' + title : title + ' · Fokus';
+  const tags = home ? {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {'@type':'WebSite', '@id':base+'/#website', name:'Fokus', url:canonical},
+      {'@type':'WebPage', '@id':canonical, url:canonical, name:pageTitle, isPartOf:{'@id':base+'/#website'},
+        mainEntity:{'@id':base+'/#app'}, primaryImageOfPage:{'@type':'ImageObject',url:image,width:1200,height:630}},
+      {'@type':'SoftwareApplication', '@id':base+'/#app', name:'Fokus', url:canonical, description:desc,
+        operatingSystem:'macOS 12 or later on Apple Silicon', applicationCategory:'ProductivityApplication',
+        image, downloadUrl:macDownload, sameAs:repository, isAccessibleForFree:true,
+        offers:{'@type':'Offer',price:'0',priceCurrency:'USD'},
+        license:'https://www.gnu.org/licenses/gpl-3.0.html'}
+    ]
+  } : article ? {
+    '@context':'https://schema.org','@type':'TechArticle',headline:title,description:desc,
+    datePublished:article.date,dateModified:article.date,author:{'@type':'Organization',name:'Fokus',url:base+'/'},
+    image,mainEntityOfPage:canonical
+  } : null;
+  const social = hidden ? '' : `
+    <meta property="og:type" content="${article ? 'article' : 'website'}">
+    <meta property="og:url" content="${canonical}">
+    <meta property="og:site_name" content="Fokus">
+    <meta property="og:title" content="${esc(pageTitle)}">
+    <meta property="og:description" content="${esc(desc)}">
+    <meta property="og:image" content="${image}">
+    <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg"><meta property="og:image:alt" content="${esc(card.alt)}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${esc(pageTitle)}"><meta name="twitter:description" content="${esc(desc)}">
+    <meta name="twitter:image" content="${image}"><meta name="twitter:image:alt" content="${esc(card.alt)}">`;
+  save(url==='404'?'404.html':url.slice(1)+'index.html',`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(pageTitle)}</title><meta name="description" content="${esc(desc)}">${hidden?'<meta name="robots" content="noindex">':'<meta name="robots" content="max-image-preview:large"><link rel="canonical" href="'+canonical+'">'}${social}<link rel="icon" href="/assets/ceramic.png"><link rel="stylesheet" href="/assets/site.css">${home?'<link rel="stylesheet" href="/assets/showcase.css"><link rel="stylesheet" href="/assets/puzzle-preview.css">':''}<link rel="alternate" type="application/rss+xml" href="/feed.xml" title="Fokus guides">${tags?'<script type="application/ld+json">'+JSON.stringify(tags)+'</script>':''}<script defer src="/assets/measure.js"></script></head><body class="${home?'home':''}"><a class="skip" href="#main">Skip to content</a><header class="nav"><div>${brand}<nav aria-label="Main"><a href="/#whats-new">Puzzle breaks</a><a href="/#sample">Blocking</a><a href="${repository}">GitHub ↗</a></nav></div></header><main id="main">${body}</main><footer>${brand}<div class="footer-links"><a href="${repository}">GitHub ↗</a><a href="${releases}">Release notes</a></div><a href="/privacy/">Privacy</a></footer></body></html>`);
   if(!hidden)pageRecords.push([url,article?.date??date]);
 }
 const guideIcons = {
@@ -70,7 +113,7 @@ const guideIcons = {
 };
 const siteBreakGuide = guides.find(guide => guide.slug === 'temporarily-unblock-one-website');
 function cards(){return guides.map(g=>`<a class="guide-row" href="${guideUrl(g)}"><span class="glyph">${icon(guideIcons[g.slug] ?? Clock3,22)}</span><span>${g.short}</span>${icon(ArrowUpRight,17)}</a>`).join('')}
-page('/','Puzzle breaks while your coding agent works','Trade doomscrolling between prompts for a Lichess chess puzzle. Fokus saves your progress, tracks your dailies and blocks distracting sites and apps on your Mac.',showcase({zip:macDownload, repository, ...previews}),{home:true});
+page('/',pitch.title,pitch.description,showcase({zip:macDownload, repository, ...previews}),{home:true});
 page('/guides/','Puzzle breaks and website blocking on Mac','Follow tested examples for taking a puzzle break, opening one blocked site or setting your Mac’s working hours.',`<div class="article"><h1>Fokus guides</h1><p class="intro">Take a puzzle break, look up a fix on a blocked site or set your workweek. Each walkthrough includes the result from a Mac test.</p><div class="guide-list">${cards()}</div></div>`);
 for(const g of guides){
   const related = g === siteBreakGuide ? guides[0] : siteBreakGuide;
