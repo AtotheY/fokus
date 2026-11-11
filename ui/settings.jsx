@@ -239,6 +239,7 @@ function CometProtection({ report }) {
 
 export function Settings({
   appearance: a,
+  update,
   back,
   ready,
   installed,
@@ -260,7 +261,7 @@ export function Settings({
         </Button>
       </div>
       <div className="setting-tabs" aria-label="Settings sections">
-        {["App icon", "Colours", "Window", "Blocker", "Privacy"].map((t) => (
+        {["App icon", "Colours", "Window", "Blocker", "Privacy", "About"].map((t) => (
           <button key={t} aria-pressed={tab === t} onClick={() => setTab(t)}>
             {t}
           </button>
@@ -381,6 +382,25 @@ export function Settings({
                 />
               </Row>
             ))}
+          </div>
+        </section>
+      ) : tab === "About" ? (
+        <section>
+          <h2>Updates</h2>
+          <div className="panel">
+            {isWindows ? (
+              <Row label="Windows preview updates" hint="Updates are manual ZIP downloads. Replace this folder with the latest Windows package.">
+                <small>Manual</small>
+              </Row>
+            ) : (
+              <Row label={update.installing ? "Updating Fokus…" : update.error ? "Couldn’t check for updates" : update.available ? `Fokus ${update.available} is available` : update.checking ? "Checking for updates…" : update.checked ? "Fokus is up to date" : "Latest version"}
+                hint={update.current && `Installed version · ${update.current}`}>
+                <Button variant="soft" disabled={update.installing || update.checking}
+                  onClick={update.available ? update.install : update.check}>
+                  {update.available ? "Update and restart" : "Check now"}
+                </Button>
+              </Row>
+            )}
           </div>
         </section>
       ) : tab === "Privacy" ? (

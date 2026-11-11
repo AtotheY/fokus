@@ -752,8 +752,10 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "fokus"
-version = "0.4.6"
+version = "0.4.7"
 dependencies = [
+ "anyhow",
+ "block2",
  "chrono",
  "fastrand",
  "libc",
@@ -761,6 +763,7 @@ dependencies = [
  "objc2-app-kit",
  "objc2-foundation",
  "plist",
+ "roxmltree",
  "serde",
  "serde_json",
  "tauri",
@@ -2489,6 +2492,12 @@ dependencies = [
  "wasm-streams",
  "web-sys",
 ]
+
+[[package]]
+name = "roxmltree"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
 
 [[package]]
 name = "rustc-hash"

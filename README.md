@@ -65,7 +65,7 @@ Fokus checks the frontmost app while its menu bar process is running. If a selec
 
 [Download the latest Apple Silicon ZIP](https://github.com/AtotheY/fokus/releases/latest/download/Fokus-arm64.zip) or [browse releases and checksums](https://github.com/AtotheY/fokus/releases). The public preview is ad-hoc signed. When upgrading from an early preview, quit the old app, replace it in Applications, and enable the helper in the new version. Existing blocking rules stay in the shared Fokus support directory.
 
-From version 0.4.6, Fokus checks hourly for signed Mac updates, downloads them automatically and installs them when you quit. Choose **Fokus → Check for Updates…** to update sooner. Install 0.4.6 or later manually once on Macs running earlier versions.
+Fokus checks for signed Mac updates at launch and every 15 minutes. When a newer version is available, a download icon appears beside the Fokus name. Click it to install the latest release and restart. Use **Settings → About → Updates** or **Fokus → Check for Updates…** to check manually. Install 0.4.6 or later manually once on Macs running earlier versions.
 
 To publish a release, increment the integer CFBundleVersion in desktop/Info.plist and update the package, Cargo, Tauri and Info.plist versions and both lockfiles. Push a matching stable version tag, such as `v0.4.2`. The macOS workflow builds and verifies the app before publishing the ZIP, signed Sparkle appcast and SHA256SUMS.txt together. The workflow reads the Fokus-specific Ed25519 key from the FOKUS_SPARKLE_KEY Actions secret. The website uses GitHub’s latest-release asset URL.
 

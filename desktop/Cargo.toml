@@ -1,6 +1,6 @@
 [package]
 name = "fokus"
-version = "0.4.6"
+version = "0.4.7"
 edition = "2021"
 license = "GPL-3.0-or-later"
 build = "build.rs"
@@ -22,11 +22,14 @@ windows-service = "0.8"
 windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_Security", "Win32_Security_Authorization", "Win32_Storage_FileSystem", "Win32_System_Pipes", "Win32_System_IO", "Win32_System_Memory", "Win32_System_SystemInformation", "Win32_System_Threading", "Win32_UI_WindowsAndMessaging", "Win32_UI_Shell"] }
 
 [target.'cfg(target_os = "macos")'.dependencies]
+anyhow = "1"
+block2 = "0.6"
+roxmltree = "0.20"
 plist = "1"
 tauri = { version = "2", features = ["macos-private-api"] }
 objc2 = "0.6"
 objc2-app-kit = { version = "0.3", default-features = false, features = ["NSApplication","NSImage","NSBitmapImageRep","NSGraphicsContext","NSImageRep","objc2-core-graphics","NSWindow","NSWorkspace","NSRunningApplication"] }
-objc2-foundation = { version = "0.3", default-features = false, features = ["NSData","NSBundle","NSString"] }
+objc2-foundation = { version = "0.3", default-features = false, features = ["NSData","NSBundle","NSString","NSError","NSObject"] }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
