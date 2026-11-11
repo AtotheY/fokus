@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Button, Dialog } from "@radix-ui/themes";
 import { Download } from "lucide-react";
 import { invoke } from "./settings";
+import { isWindows } from "./platform";
 
 export function useAppUpdates(report) {
   const [status, setStatus] = useState({});
   const [offer, setOffer] = useState(false);
   const [checking, setChecking] = useState(false);
   useEffect(() => {
+    if (isWindows) return;
     let sequence = 0;
     const read = async () => {
       const request = ++sequence;

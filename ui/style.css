@@ -7,7 +7,7 @@
   --outline: #34343c;
   --subtext: #a8a6b0;
   --opacity: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -36,7 +36,7 @@ button:disabled {
 }
 .radix-themes {
   --default-font-family:
-    -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
   --default-font-size: 14px;
   --color-panel-solid: var(--surface);
   --color-background: var(--base);

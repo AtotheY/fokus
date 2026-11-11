@@ -141,6 +141,21 @@ impl Rules {
                 updates.push((id, additions));
             }
         }
+        // YouTube was added to the default Social media group after the preset
+        // catalogue shipped. Upgrade that group even when it contains other
+        // saved sites, while leaving every other group and its enabled state alone.
+        if self.groups.iter().any(|g| {
+            g.id == 1 && g.name == "Social media" && !g.sites.contains(&"youtube.com".into())
+        }) {
+            let aliases = hostnames(&["youtube.com".into()]);
+            if occupied.is_disjoint(&aliases) && remaining > 0 {
+                if let Some((_, sites)) = updates.iter_mut().find(|(id, _)| *id == 1) {
+                    sites.push("youtube.com".into());
+                } else {
+                    updates.push((1, vec!["youtube.com".into()]));
+                }
+            }
+        }
         updates
     }
 
@@ -267,13 +282,7 @@ impl Rules {
             }
             AddApp { id, app } => {
                 let i = group(id)?;
-                if app.id.is_empty()
-                    || app.id.len() > 180
-                    || !app.id.contains('.')
-                    || !app
-                        .id
-                        .bytes()
-                        .all(|c| c.is_ascii_alphanumeric() || b".-_".contains(&c))
+                if !crate::blockable_app_id(&app.id)
                     || app.name.trim().is_empty()
                     || app.name.len() > 150
                     || [
@@ -285,7 +294,7 @@ impl Rules {
                     ]
                     .contains(&app.id.to_lowercase().as_str())
                 {
-                    return Err("Choose a blockable Mac application.".into());
+                    return Err("Choose a blockable application.".into());
                 }
                 if self.groups[i].apps.iter().any(|a| a.id == app.id) {
                     return Err("App already in this group.".into());
@@ -323,6 +332,7 @@ mod tests {
     #[test]
     fn catalogue_contains_valid_editable_domains_and_leaves_room_for_custom_sites() {
         let r = Rules::default();
+        assert!(r.groups[0].sites.contains(&"youtube.com".into()));
         let mut seen = BTreeSet::new();
         for (group, expected) in r.groups.iter().zip([
             "linkedin.com",
@@ -368,11 +378,22 @@ mod tests {
         }
         assert!(!r.groups[0].enabled);
         assert!(r.preset_additions().is_empty());
+        let mut edited_social = Rules::default();
+        edited_social.groups[0]
+            .sites
+            .retain(|site| site != "youtube.com");
+        let changes = edited_social.preset_additions();
+        assert!(changes
+            .iter()
+            .any(|(id, sites)| *id == 1 && sites.contains(&"youtube.com".into())));
         r.groups = starter_groups(Some(&["x.com".into()]));
-        assert!(r.preset_additions().iter().all(|(id, _)| *id != 1));
+        assert!(r
+            .preset_additions()
+            .iter()
+            .any(|(id, sites)| *id == 1 && sites.contains(&"youtube.com".into())));
         r.groups[0]
             .sites
-            .extend((0..244).map(|n| format!("s{n}.example")));
+            .extend((0..256).map(|n| format!("s{n}.example")));
         assert!(r.preset_additions().is_empty());
     }
 

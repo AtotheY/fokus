@@ -1,0 +1,40 @@
+name: Build Windows preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'windows/**']
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: npm ci
+      - run: npm run build:ui
+      - run: cargo test --locked --workspace
+      - run: cargo build --locked --workspace
+      - run: python tests/windows-helper.py
+      - run: node --test tests/chess.mjs tests/puzzles.mjs
+      - run: npm run build:windows
+        id: package
+      - name: Check packaged desktop app
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/windows-desktop.ps1
+      - name: Check Windows service installation and removal
+        if: ${{ !cancelled() && steps.package.outcome == 'success' }}
+        run: python tests/windows-service.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Fokus-windows-x64
+          path: dist/Fokus-windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows-desktop-check
+          path: dist/windows-desktop-smoke.png

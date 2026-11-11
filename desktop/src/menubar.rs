@@ -1,7 +1,11 @@
 use crate::{query, socket_path};
 use chrono::{Local, TimeZone};
 use serde_json::{json, Value};
-use std::{os::unix::net::UnixStream, sync::mpsc, time::Duration};
+use std::{sync::mpsc, time::Duration};
+#[cfg(target_os = "macos")]
+use std::os::unix::net::UnixStream;
+#[cfg(windows)]
+use crate::WindowsConnection as UnixStream;
 use tauri::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::TrayIconBuilder,
@@ -85,8 +89,12 @@ pub fn install(app: &mut App) -> tauri::Result<()> {
     let sep2 = PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(app, &[&status, &sep, &quick, &add, &open, &sep2, &quit])?;
     TrayIconBuilder::with_id("focus")
-        .icon(tauri::include_image!("./icons/status.png"))
-        .icon_as_template(true)
+        .icon(if cfg!(windows) {
+            tauri::include_image!("./icons/icon.png")
+        } else {
+            tauri::include_image!("./icons/status.png")
+        })
+        .icon_as_template(cfg!(target_os = "macos"))
         .tooltip("Fokus")
         .menu(&menu)
         .build(app)?;
