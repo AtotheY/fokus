@@ -13,8 +13,12 @@ with tempfile.TemporaryDirectory() as tmp:
         "# <<< Fokus website blocking <<<\n0.0.0.0 other.test\n"
     )
     script = path / "check.js"
-    script.write_text((root / "browser/watch-comet.js").read_text() + r"""
-function run([path]) {
+    watcher = (root / "browser/watch-comet.js").read_text()
+    script.write_text("function makeWatcher(Application, delay) {\n" + watcher + r"""
+  return {run, readRules, inspect, siteOf, setPermissionCheck(fn) {canInspectWithoutPrompt = fn;}};
+}
+function run([path, emptyHosts]) {
+  const {readRules, inspect, siteOf} = makeWatcher();
   const rules = readRules(path);
   const page = "file:///Fokus/blocked.html";
   function check(address, hosts, expected, current = address) {
@@ -53,11 +57,40 @@ function run([path]) {
     const address = page + "#allow/" + payload;
     check(address, rules, address);
   }
+  // Restart while the hosts file is already empty. Exercise the production
+  // polling loop with a delayed Comet window and no real Apple Events.
+  const tabs = [{
+    get url() { return () => tabAddress; },
+    set url(value) { tabAddress = value; },
+  }];
+  tabs.url = () => [tabAddress];
+  let tabAddress, tick, scans, permissionChecks, granted;
+  const mockApplication = () => ({
+    running: () => true,
+    windows: () => { scans++; return tick === 0 ? [] : [{tabs}]; },
+  });
+  const done = Error("end of test");
+  const watcher = makeWatcher(mockApplication, () => { if (++tick === 3) throw done; });
+  watcher.setPermissionCheck(() => { permissionChecks++; return granted; });
+  for (granted of [true, false]) {
+    tick = scans = permissionChecks = 0;
+    tabAddress = page + "#blocked/" + payload;
+    try { watcher.run(["/Fokus/blocked.html", emptyHosts, $.getppid()]); }
+    catch (error) { if (error !== done) throw error; }
+    const expected = page + (granted ? "#available/" : "#blocked/") + payload;
+    if (tabAddress !== expected || scans !== (granted ? 2 : 0) || !permissionChecks) {
+      throw Error("Incorrect restart recovery with permission " + granted);
+    }
+  }
+
 }
 """)
+    empty_hosts = path / "empty-hosts"
+    empty_hosts.touch()
     output = subprocess.check_output(
-        ["/usr/bin/osascript", "-l", "JavaScript", script, hosts], text=True
+        ["/usr/bin/osascript", "-l", "JavaScript", script, hosts, empty_hosts], text=True, timeout=10
     )
-    assert output.splitlines() == ['{"allow":"www.linkedin.com"}', '{"allow":"x.com"}']
+    assert output.splitlines() == ['{"allow":"www.linkedin.com"}', '{"allow":"x.com"}',
+                                   '{"status":"idle"}', '{"status":"idle"}']
 subprocess.run(["node", root / "tests/comet-page.mjs"], check=True)
 print("Comet blocking, break requests and exact return URLs passed.")
