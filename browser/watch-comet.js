@@ -1,5 +1,5 @@
 // Run with macOS JavaScript for Automation. Only an explicit button click
-// sends a hostname to Fokus. Page addresses are never logged or stored.
+// sends a hostname to Fokus. Return addresses stay in this process's memory.
 ObjC.import("AppKit");
 ObjC.bindFunction("getppid", ["int", []]);
 
@@ -10,7 +10,7 @@ function send(event) {
 
 function readRules(path) {
   const file = $.NSString.stringWithContentsOfFileEncodingError(path, $.NSUTF8StringEncoding, null);
-  if (!file) return new Set();
+  if (!file) throw Error("Could not read blocking rules");
   const rules = new Set();
   let inside = false;
   for (const line of ObjC.unwrap(file).split(/\r?\n/)) {
@@ -27,28 +27,40 @@ function siteOf(address) {
   return url && ObjC.unwrap(url.host)?.toLowerCase().replace(/\.$/, "");
 }
 
-function inspect(tab, address, rules, page) {
-  let target;
-  let allow;
-  if (address.startsWith(page + "#")) {
-    const [state, host] = address.slice(page.length + 1).split("/");
-    if (!host || !/^[a-z0-9.-]+$/i.test(host)) return;
-    const blocked = rules.has(host);
-    target = page + (blocked ? "#blocked/" : "#available/") + host;
-    if (state === "allow" && blocked) allow = host;
-  } else {
+function inspect(tab, address, rules, page, destinations) {
+  if (!address.startsWith(page + "#")) {
     const host = siteOf(address);
     if (!rules.has(host)) return;
-    target = page + "#blocked/" + host;
+    const id = tab.id();
+    if (tab.url() !== address) return;
+    tab.url = page + "#blocked/" + host;
+    destinations.set(id, {host, address});
+    return id;
   }
-  if (address === target || tab.url() !== address) return;
-  tab.url = target;
-  if (allow) send({allow});
+
+  const [state, host] = address.slice(page.length + 1).split("/");
+  if (!host || !/^[a-z0-9.-]+$/i.test(host)) return;
+  const id = tab.id();
+  const saved = destinations.get(id);
+  if (rules.has(host)) {
+    const blocked = page + "#blocked/" + host;
+    if (address !== blocked && tab.url() === address) {
+      tab.url = blocked;
+      if (state === "allow") send({allow: host});
+    }
+    if (saved && saved.host === host) return id;
+    return;
+  }
+
+  const target = saved && saved.host === host ? saved.address : page + "#available/" + host;
+  if (address !== target && tab.url() === address) tab.url = target;
+  destinations.delete(id);
 }
 
 function run([file, hostsPath, parent]) {
   const page = ObjC.unwrap($.NSURL.fileURLWithPath(file).absoluteString);
   const comet = Application("ai.perplexity.comet");
+  const destinations = new Map();
   let previous = "", status = "", ticks = 0, releaseTabs = false;
   function report(value) {
     if (status !== value) send({status: value});
@@ -57,6 +69,7 @@ function run([file, hostsPath, parent]) {
   while ($.getppid() === Number(parent)) {
     try {
       if (!comet.running()) {
+        destinations.clear();
         report("waiting");
         ticks = 0;
       } else {
@@ -65,16 +78,25 @@ function run([file, hostsPath, parent]) {
         if (rules.size || releaseTabs) {
           const windows = comet.windows();
           const fullScan = signature !== previous || ticks % 12 === 0;
+          const retained = new Set();
           for (const win of windows) {
             if (fullScan) {
               const addresses = win.tabs.url();
               addresses.forEach((address, i) => {
-                if (address) inspect(win.tabs[i], address, rules, page);
+                if (address) {
+                  const id = inspect(win.tabs[i], address, rules, page, destinations);
+                  if (id !== undefined) retained.add(id);
+                }
               });
             } else {
               const tab = win.activeTab;
               const address = tab.url();
-              if (address) inspect(tab, address, rules, page);
+              if (address) inspect(tab, address, rules, page, destinations);
+            }
+          }
+          if (fullScan) {
+            for (const id of destinations.keys()) {
+              if (!retained.has(id)) destinations.delete(id);
             }
           }
           releaseTabs = rules.size > 0;

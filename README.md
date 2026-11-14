@@ -46,7 +46,7 @@ Choose the shield beside a domain in Groups to compare the rule with the hostnam
 
 ## Comet tabs
 
-When blocking first becomes active with Comet open, macOS asks whether Fokus can control Comet. Choose **Allow**. Fokus uses Comet’s Mac automation interface to replace matching tabs with a local page, including tabs serving cached content. The page’s **Unblock temporarily** button opens the existing site-break controls. Tab addresses are processed locally in memory.
+When blocking first becomes active with Comet open, macOS asks whether Fokus can control Comet. Choose **Allow**. Fokus uses Comet’s Mac automation interface to replace matching tabs with a local page, including tabs serving cached content. The page’s **Unblock temporarily** button opens the existing site-break controls. When a break allows the site, each blocked tab automatically returns to its original URL. Fokus keeps those addresses in memory, so a tab blocked before Fokus restarted can only offer a link to the site's homepage.
 
 Keep Fokus running in the menu bar for tab protection. Quitting leaves the system hosts rules active. A cached page can appear briefly before the next tab check. **Settings → Blocker** shows the Comet connection and links to macOS Automation settings if permission was denied.
 
