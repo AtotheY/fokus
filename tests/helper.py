@@ -1,12 +1,15 @@
 """Exercise the packaged daemon against a disposable hosts file on macOS."""
 import json
+import os
 from pathlib import Path
 import socket
 import subprocess
 import tempfile
 import time
 
-BINARY = Path(__file__).resolve().parents[1] / "dist/Fokus.app/Contents/MacOS/fokus-helper"
+CONTENTS = Path(__file__).resolve().parents[1] / "dist/Fokus.app/Contents"
+BINARY = CONTENTS / "MacOS/fokus-helper"
+RAYCAST = CONTENTS / "Resources/Raycast"
 
 
 def request(endpoint, payload, delay=0):
@@ -45,7 +48,29 @@ with tempfile.TemporaryDirectory(prefix="fokus-", dir="/tmp") as folder:
         assert "0.0.0.0 old.reddit.com\n" in hosts.read_text()
         request(endpoint, {"type": "break", "minutes": 5, "site": None})
         assert hosts.read_text() == original
+        # Run the same executable commands Raycast indexes, against this helper.
+        def command(script, minutes):
+            return subprocess.run(
+                [RAYCAST / script, minutes],
+                env={**os.environ, "FOKUS_TEST_DIRECTORY": str(root)},
+                capture_output=True, text=True, timeout=8,
+            )
+
+        request(endpoint, {"type": "endFocus"})
+        assert command("take-break.rb", "5").returncode != 0
+        for invalid in ("", "0", "241", "1.5", "10min"):
+            assert command("start-session.rb", invalid).returncode != 0
+        started = command("start-session.rb", "17")
+        assert started.returncode == 0, started.stderr
+        state = request(endpoint, {"type": "status"})
+        assert 1018 <= state["rules"]["focusUntil"] - state["now"] <= 1020
+        assert len(state["blocked"]) == 3
+        paused = command("take-break.rb", "240")
+        assert paused.returncode == 0, paused.stderr
+        state = request(endpoint, {"type": "status"})
+        assert state["rules"]["breakUntil"] == state["rules"]["focusUntil"]
+        assert hosts.read_text() == original
     finally:
         worker.terminate()
         worker.wait(timeout=4)
-print("Packaged helper passed delayed IPC, site break and hosts restoration.")
+print("Packaged helper passed delayed IPC, site breaks, hosts restoration and Raycast timers.")
