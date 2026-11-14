@@ -1,5 +1,5 @@
 // Run with macOS JavaScript for Automation. Only an explicit button click
-// sends a hostname to Fokus. Return addresses stay in this process's memory.
+// sends a hostname to Fokus. The return URL travels in the local page's fragment.
 ObjC.import("AppKit");
 ObjC.bindFunction("getppid", ["int", []]);
 
@@ -27,41 +27,40 @@ function siteOf(address) {
   return url && ObjC.unwrap(url.host)?.toLowerCase().replace(/\.$/, "");
 }
 
-function inspect(tab, address, rules, page, destinations) {
-  if (!address.startsWith(page + "#")) {
-    const host = siteOf(address);
-    if (!rules.has(host)) return;
-    const id = tab.id();
-    if (tab.url() !== address) return;
-    tab.url = page + "#blocked/" + host;
-    destinations.set(id, {host, address});
-    return id;
+function inspect(tab, address, rules, page) {
+  let target, allow;
+  if (address.startsWith(page + "#")) {
+    const [state, payload] = address.slice(page.length + 1).split("/");
+    if (!payload || !["blocked", "allow", "available"].includes(state)) return;
+    let original;
+    try { original = decodeURIComponent(payload); } catch { return; }
+    // Older block pages carry just the host.
+    const host = /^[a-z0-9.-]+$/i.test(payload) ? payload : siteOf(original);
+    if (!host) return;
+    const blocked = rules.has(host);
+    target = page + (blocked ? "#blocked/" : "#available/") + payload;
+    if (blocked && state === "allow") allow = host;
+  } else {
+    if (!rules.has(siteOf(address))) return;
+    target = page + "#blocked/" + encodeURIComponent(address);
   }
+  if (address === target || tab.url() !== address) return;
+  tab.url = target;
+  if (allow) send({allow});
+}
 
-  const [state, host] = address.slice(page.length + 1).split("/");
-  if (!host || !/^[a-z0-9.-]+$/i.test(host)) return;
-  const id = tab.id();
-  const saved = destinations.get(id);
-  if (rules.has(host)) {
-    const blocked = page + "#blocked/" + host;
-    if (address !== blocked && tab.url() === address) {
-      tab.url = blocked;
-      if (state === "allow") send({allow: host});
-    }
-    if (saved && saved.host === host) return id;
-    return;
-  }
-
-  const target = saved && saved.host === host ? saved.address : page + "#available/" + host;
-  if (address !== target && tab.url() === address) tab.url = target;
-  destinations.delete(id);
+function canInspectWithoutPrompt() {
+  ObjC.import("CoreServices");
+  ObjC.bindFunction("AEDeterminePermissionToAutomateTarget", ["int", ["void *", "unsigned int", "unsigned int", "bool"]]);
+  const target = $.NSAppleEventDescriptor.descriptorWithBundleIdentifier("ai.perplexity.comet");
+  const anyEvent = 0x2a2a2a2a;
+  return $.AEDeterminePermissionToAutomateTarget(target.aeDesc, anyEvent, anyEvent, false) === 0;
 }
 
 function run([file, hostsPath, parent]) {
   const page = ObjC.unwrap($.NSURL.fileURLWithPath(file).absoluteString);
   const comet = Application("ai.perplexity.comet");
-  const destinations = new Map();
-  let previous = "", status = "", ticks = 0, releaseTabs = false;
+  let previous = null, status = "", ticks = 0;
   function report(value) {
     if (status !== value) send({status: value});
     status = value;
@@ -69,41 +68,34 @@ function run([file, hostsPath, parent]) {
   while ($.getppid() === Number(parent)) {
     try {
       if (!comet.running()) {
-        destinations.clear();
+        previous = null;
         report("waiting");
         ticks = 0;
       } else {
         const rules = readRules(hostsPath);
         const signature = Array.from(rules).join(" ");
-        if (rules.size || releaseTabs) {
+        // Recover open block pages after a restart during a break. A first-time
+        // user should only get the Automation prompt when blocking is active.
+        if (rules.size || (previous === null ? canInspectWithoutPrompt() : previous !== "")) {
           const windows = comet.windows();
           const fullScan = signature !== previous || ticks % 12 === 0;
-          const retained = new Set();
           for (const win of windows) {
             if (fullScan) {
               const addresses = win.tabs.url();
               addresses.forEach((address, i) => {
-                if (address) {
-                  const id = inspect(win.tabs[i], address, rules, page, destinations);
-                  if (id !== undefined) retained.add(id);
-                }
+                if (address) inspect(win.tabs[i], address, rules, page);
               });
             } else {
               const tab = win.activeTab;
               const address = tab.url();
-              if (address) inspect(tab, address, rules, page, destinations);
+              if (address) inspect(tab, address, rules, page);
             }
           }
-          if (fullScan) {
-            for (const id of destinations.keys()) {
-              if (!retained.has(id)) destinations.delete(id);
-            }
-          }
-          releaseTabs = rules.size > 0;
-          report(releaseTabs ? "connected" : "idle");
+          report(rules.size ? "connected" : "idle");
           ticks++;
-          previous = signature;
+          if (windows.length || rules.size) previous = signature;
         } else {
+          previous = signature;
           report("idle");
         }
       }
