@@ -68,7 +68,7 @@ Fokus checks the frontmost app while its menu bar process is running. If a selec
 
 Fokus checks for signed Mac updates at launch and every 15 minutes. When a newer version is available, a download icon appears beside the Fokus name. Click it to install the latest release and restart. Use **Settings → About → Updates** or **Fokus → Check for Updates…** to check manually. Install 0.4.6 or later manually once on Macs running earlier versions.
 
-To publish a release, increment the integer CFBundleVersion in desktop/Info.plist and update the package, Cargo, Tauri and Info.plist versions and both lockfiles. Push a matching stable version tag, such as `v0.4.2`. The macOS workflow builds and verifies the app before publishing the ZIP, signed Sparkle appcast and SHA256SUMS.txt together. The workflow reads the Fokus-specific Ed25519 key from the FOKUS_SPARKLE_KEY Actions secret. The website uses GitHub’s latest-release asset URL.
+Merging to `main` starts a Mac release automatically. The workflow increments the patch version and Sparkle build number, commits the version files and tags the release. If a build fails, rerun the workflow for its existing tag. The macOS workflow builds and verifies the app before publishing the ZIP, signed Sparkle appcast and SHA256SUMS.txt together. The workflow reads the Fokus-specific Ed25519 key from the FOKUS_SPARKLE_KEY Actions secret. The website uses GitHub’s latest-release asset URL.
 
 To build the marketing site, run `npm ci && npm run build:site`. A Cloudflare deployment configuration template is in `site/wrangler.example.jsonc`. Copy it to `site/wrangler.jsonc` and configure your own database and domains before deploying.
 
