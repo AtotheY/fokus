@@ -36,7 +36,7 @@ After building, run `python3 tests/helper.py` to check the packaged helper again
 
 ## Everyday controls
 
-The Mac menu bar shows the current session or break end time. Use it to reach session controls or add a website. Closing the window leaves the menu available. Quitting the app leaves the local helper running.
+The Mac menu bar shows the current session or break end time. Use it to reach session controls or add a website. Click the red close button (or press ⌘W) to hide the window and its Dock icon. Your session and blocking continue in the menu bar. Choose **Open Fokus** there to bring the window and Dock icon back, or **Quit Fokus** to exit the app. Quitting the app leaves the local helper running.
 
 Click the lock beside a website or app for a timed exception. **Take a break** lets you choose the whole list or a single site. Resuming a whole-list break preserves existing single-site exceptions. Breaks stop at the end of the session. **Settings → Blocker → Pause before a break** adds an optional five-second pause.
 
