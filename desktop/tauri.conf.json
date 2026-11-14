@@ -1,6 +1,6 @@
 {
   "productName": "Fokus",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "identifier": "dev.usefokus.app",
   "build": { "frontendDist": "../web" },
   "app": {
