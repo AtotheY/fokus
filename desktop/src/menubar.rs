@@ -122,7 +122,8 @@ pub fn install(app: &mut App) -> tauri::Result<()> {
                 v.iter()
                     .any(|g| g["apps"].as_array().is_some_and(|a| !a.is_empty()))
             });
-            let seconds = if has_apps && state["sessionEnd"].is_number() {
+            // Raycast can start a session directly through the helper while this loop sleeps.
+            let seconds = if has_apps {
                 seconds.min(1)
             } else {
                 seconds
